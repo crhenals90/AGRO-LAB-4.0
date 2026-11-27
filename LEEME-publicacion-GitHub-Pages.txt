@@ -1,0 +1,20 @@
+# AGRO-LAB 4.0 — Simulador de poscosecha
+
+Este paquete contiene el simulador HTML listo para publicarse como sitio estático con GitHub Pages.
+
+## Publicación rápida
+
+1. Inicia sesión en https://github.com/ y crea un repositorio nuevo llamado `agro-lab-poscosecha` (puede ser público).
+2. En el repositorio, selecciona **Add file → Upload files**.
+3. Sube `index.html` y `.nojekyll` desde esta carpeta. Si la interfaz no permite seleccionar el archivo oculto `.nojekyll`, basta con subir `index.html`.
+4. Entra a **Settings → Pages**.
+5. En **Build and deployment**, elige **Deploy from a branch**.
+6. Selecciona la rama `main` y la carpeta `/(root)`, y pulsa **Save**.
+7. Espera a que termine la publicación. En **Settings → Pages** aparecerá la dirección pública del sitio.
+
+## Importante
+
+- El archivo principal debe llamarse exactamente `index.html` y estar en la raíz del repositorio.
+- GitHub Pages publica el contenido en Internet. No subas información privada ni claves secretas.
+- El simulador carga bibliotecas externas (por ejemplo, Three.js, Tailwind y Font Awesome) desde CDN; por ello, algunas funciones requieren conexión a Internet.
+- Se conservaron los módulos y la estructura del simulador original. Se retiraron únicamente menciones de una estrategia institucional que no debe aparecer en el material.

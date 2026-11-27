@@ -1,0 +1,2892 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="INSTRUCTOR. Carlos Julio Rhenals Ospino">
+  <meta name="description" content="OVA Interactivo SENA - Manejo de Poscosecha de Productos Agrícolas (Código 270403050) - Agro-Lab 4.0">
+  <title>AGRO-LAB 4.0 | Manejo de Poscosecha Agrícola • SENA 270403050</title>
+
+  <!-- Google Fonts: Orbitron, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Three.js r128 + OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            agro: {
+              dark: '#050f0a',
+              petrol: '#09181d',
+              slate: '#111827',
+              emerald: '#00ff88',
+              cyan: '#00e5ff',
+              amber: '#ff9e00',
+              danger: '#ff3b5c'
+            }
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg-deep: #050f0a;
+      --bg-petrol: #09181d;
+      --neon-green: #00ff88;
+      --neon-cyan: #00e5ff;
+      --neon-amber: #ff9e00;
+    }
+
+    * {
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: #00ff88 #09181d;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(0, 255, 136, 0.07) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(0, 229, 255, 0.07) 0%, transparent 45%),
+        linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: linear-gradient(145deg, rgba(9, 24, 29, 0.84), rgba(5, 15, 10, 0.92));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 255, 136, 0.22);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 0 20px rgba(0, 255, 136, 0.04);
+    }
+
+    .glass-panel-cyan {
+      background: linear-gradient(145deg, rgba(9, 24, 29, 0.86), rgba(17, 24, 39, 0.9));
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 16px rgba(0, 229, 255, 0.05);
+    }
+
+    .neon-glow-green {
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.35);
+    }
+
+    .neon-text-green {
+      text-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
+    }
+
+    .neon-text-cyan {
+      text-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+    }
+
+    .nav-btn {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-btn:hover {
+      border-color: rgba(0, 229, 255, 0.5);
+      background: rgba(0, 229, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.2), rgba(0, 229, 255, 0.18));
+      border-color: #00ff88;
+      color: #00ff88;
+      box-shadow: 0 0 14px rgba(0, 255, 136, 0.28);
+    }
+
+    .section-view {
+      display: none;
+      animation: fadeSlideIn 0.38s ease-out forwards;
+    }
+
+    .section-view.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Custom Range Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 999px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00ff88;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ff88;
+      border: 2px solid #050f0a;
+    }
+
+    /* Print styling for SENA learning report */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #sena-report-modal, #sena-report-modal * {
+        visibility: visible;
+      }
+      #sena-report-modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Identificación de autoría original: Diseño instruccional y megaprompt adaptado por INSTRUCTOR. Carlos Julio Rhenals Ospino - SENA -->
+
+  <!-- TOP TELEMETRY HUD HEADER -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-agro-emerald/30 px-3 sm:px-6 py-2.5">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand & SENA Tag -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-agro-emerald/25 to-agro-cyan/25 border border-agro-emerald flex items-center justify-center neon-glow-green">
+          <i class="fa-solid fa-seedling text-agro-emerald text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-orbitron font-bold text-sm sm:text-base tracking-wider text-white">AGRO-LAB <span class="text-agro-emerald">4.0</span></span>
+            <span class="hidden md:inline-block text-[10px] font-mono px-2 py-0.5 rounded bg-agro-amber/20 text-agro-amber border border-agro-amber/40">SENA • COD. 270403050</span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">De la Cosecha al Consumidor • Gestión Agroempresarial (Ficha 3226084)</p>
+        </div>
+      </div>
+
+      <!-- Apprentice Telemetry Bar -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+        <!-- Apprentice Name Input -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-700 rounded-lg px-2.5 py-1">
+          <i class="fa-solid fa-user-graduate text-agro-cyan text-xs"></i>
+          <input id="apprentice-name" type="text" placeholder="Nombre del Aprendiz..." class="bg-transparent text-xs text-white focus:outline-none w-32 sm:w-44 font-inter" onchange="saveApprenticeName(this.value)">
+        </div>
+
+        <!-- Progress Meter -->
+        <div class="flex items-center gap-2 bg-slate-900/90 border border-agro-cyan/30 rounded-lg px-3 py-1">
+          <div class="text-right">
+            <div class="text-[10px] font-mono text-slate-400">AVANCE OVA</div>
+            <div id="hud-progress-text" class="text-xs font-orbitron font-bold text-agro-cyan">11%</div>
+          </div>
+          <div class="w-16 sm:w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div id="hud-progress-bar" class="h-full bg-gradient-to-r from-agro-emerald to-agro-cyan transition-all duration-500" style="width: 11%;"></div>
+          </div>
+        </div>
+
+        <!-- Technical Score -->
+        <div class="flex items-center gap-2 bg-slate-900/90 border border-agro-emerald/40 rounded-lg px-3 py-1">
+          <i class="fa-solid fa-microchip text-agro-emerald text-sm"></i>
+          <div>
+            <div class="text-[10px] font-mono text-slate-400">PUNTAJE TÉCNICO</div>
+            <div class="text-xs font-orbitron font-bold text-agro-emerald"><span id="hud-score">0</span> <span class="text-[10px] font-mono text-slate-400">PTS</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9-SECTION NAVIGATION MENU -->
+    <nav class="max-w-[1600px] mx-auto mt-2.5 pt-2 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto pb-1" id="main-nav">
+      <button onclick="switchSection('inicio')" data-sec="inicio" class="nav-btn active whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-house-signal"></i> 1. Inicio
+      </button>
+      <button onclick="switchSection('introduccion')" data-sec="introduccion" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-diagram-project"></i> 2. Introducción
+      </button>
+      <button onclick="switchSection('biblioteca')" data-sec="biblioteca" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-book-atlas"></i> 3. Biblioteca Técnica
+      </button>
+      <button onclick="switchSection('lab3d')" data-sec="lab3d" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-cubes"></i> 4. Laboratorio 3D
+      </button>
+      <button onclick="switchSection('simuladores')" data-sec="simuladores" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-wave-square"></i> 5. Simuladores (8)
+      </button>
+      <button onclick="switchSection('diagnostico')" data-sec="diagnostico" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-stethoscope"></i> 6. Diagnóstico (8)
+      </button>
+      <button onclick="switchSection('calculos')" data-sec="calculos" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-calculator"></i> 7. Cálculos Técnicos
+      </button>
+      <button onclick="switchSection('evaluacion')" data-sec="evaluacion" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-award"></i> 8. Evaluación
+      </button>
+      <button onclick="switchSection('recursos')" data-sec="recursos" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-table-list"></i> 9. Normatividad y Tablas
+      </button>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto px-3 sm:px-6 py-6">
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 1: INICIO (HERO + VISOR 3D EN TIEMPO REAL)        -->
+    <!-- ========================================================= -->
+    <section id="sec-inicio" class="section-view active space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <!-- Hero Text & Project Context -->
+        <div class="lg:col-span-6 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-agro-emerald/15 border border-agro-emerald/40 text-agro-emerald text-xs font-mono">
+              <span class="w-2 h-2 rounded-full bg-agro-emerald animate-ping"></span>
+              CENTRO DE ACOPIO INTELIGENTE 4.0
+            </div>
+
+            <h1 class="font-orbitron text-2xl sm:text-4xl font-black leading-tight text-white">
+              DE LA COSECHA AL CONSUMIDOR: <span class="text-transparent bg-clip-text bg-gradient-to-r from-agro-emerald via-agro-cyan to-agro-amber">CIENCIA Y TECNOLOGÍA DE POSCOSECHA</span>
+            </h1>
+
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Simulador agroindustrial interactivo diseñado para aprendices del programa <strong class="text-agro-cyan">Tecnólogo en Gestión Agroempresarial (Ficha 3226084)</strong>. Domina la fisiología vegetal, cadena de frío, acondicionamiento, control de calidad e inocuidad en la competencia <strong class="text-agro-emerald">270403050 - Manejo de Poscosecha de Productos Agrícolas</strong>.
+            </p>
+
+            <div class="p-3.5 rounded-xl bg-agro-petrol/90 border-l-4 border-agro-amber text-xs text-slate-300">
+              <span class="font-mono text-agro-amber font-bold block mb-1"><i class="fa-solid fa-location-dot mr-1"></i> PROYECTO FORMATIVO REGIONAL (EL BAGRE, ANTIOQUIA):</span>
+              Mejoramiento de los procesos asociados con la actividad agropecuaria bajo principios de gestión administrativa, uso de las TIC y sostenibilidad rural.
+            </div>
+          </div>
+
+          <div class="pt-6 flex flex-wrap gap-3">
+            <button onclick="switchSection('lab3d')" class="px-5 py-3 rounded-xl bg-gradient-to-r from-agro-emerald to-emerald-500 text-slate-950 font-orbitron font-bold text-xs sm:text-sm hover:brightness-110 transition flex items-center gap-2 shadow-lg shadow-agro-emerald/25">
+              <i class="fa-solid fa-vr-cardboard"></i> EXPLORAR LABORATORIO 3D
+            </button>
+            <button onclick="switchSection('simuladores')" class="px-5 py-3 rounded-xl glass-panel-cyan text-agro-cyan font-orbitron font-bold text-xs sm:text-sm hover:bg-agro-cyan/15 transition flex items-center gap-2">
+              <i class="fa-solid fa-flask-vial"></i> BANCOS DE SIMULACIÓN
+            </button>
+            <button onclick="switchSection('diagnostico')" class="px-4 py-3 rounded-xl bg-slate-900 border border-agro-amber/40 text-agro-amber font-orbitron font-bold text-xs hover:bg-agro-amber/10 transition flex items-center gap-2">
+              <i class="fa-solid fa-magnifying-glass-chart"></i> CASOS DE PLANTA
+            </button>
+          </div>
+        </div>
+
+        <!-- Hero Interactive 3D Viewport: Automated Washing, Waxing & Sorting Line -->
+        <div class="lg:col-span-6 glass-panel-cyan rounded-2xl p-4 flex flex-col relative overflow-hidden min-h-[380px]">
+          <div class="flex items-center justify-between mb-2 z-10">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded bg-agro-cyan/20 border border-agro-cyan/40 text-agro-cyan font-mono text-[11px]">
+                <i class="fa-solid fa-cube mr-1"></i> LÍNEA AUTOMATIZADA 3D EN VIVO
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleHeroRotation()" id="hero-rot-btn" class="px-2.5 py-1 rounded bg-slate-900/90 border border-slate-700 text-xs text-slate-300 hover:border-agro-emerald">
+                <i class="fa-solid fa-rotate mr-1 text-agro-emerald"></i> Auto-Giro: ON
+              </button>
+            </div>
+          </div>
+
+          <div id="hero-3d-container" class="w-full flex-1 rounded-xl overflow-hidden bg-[#030b08] border border-slate-800 relative cursor-grab active:cursor-grabbing min-h-[300px]"></div>
+
+          <div class="mt-2 flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-400">
+            <span><i class="fa-solid fa-hand-pointer text-agro-cyan mr-1"></i> Arrastra 360° • Rueda: Zoom</span>
+            <span class="text-agro-emerald">Línea: Lavado → Aspersión → Encerado → Clasificación</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Metrics Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-panel rounded-xl p-4 border-l-4 border-agro-emerald">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-slate-400">REDUCCIÓN DE MERMAS</span>
+            <i class="fa-solid fa-arrow-trend-down text-agro-emerald text-lg"></i>
+          </div>
+          <div class="text-2xl font-orbitron font-bold text-white mt-1">-38.5%</div>
+          <p class="text-xs text-slate-400 mt-1">Con manejo de preenfriamiento y canastilla ventilada vs. granel.</p>
+        </div>
+
+        <div class="glass-panel rounded-xl p-4 border-l-4 border-agro-cyan">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-slate-400">VIDA ÚTIL PROYECTADA</span>
+            <i class="fa-solid fa-snowflake text-agro-cyan text-lg"></i>
+          </div>
+          <div class="text-2xl font-orbitron font-bold text-white mt-1">+14 a 28 Días</div>
+          <p class="text-xs text-slate-400 mt-1">Control óptimo de Temperatura, HR (90-95%) y DPV bajo.</p>
+        </div>
+
+        <div class="glass-panel rounded-xl p-4 border-l-4 border-agro-amber">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-slate-400">EFICIENCIA DE FRÍO (7/8)</span>
+            <i class="fa-solid fa-temperature-arrow-down text-agro-amber text-lg"></i>
+          </div>
+          <div class="text-2xl font-orbitron font-bold text-white mt-1">2.4 Horas</div>
+          <p class="text-xs text-slate-400 mt-1">Túnel de aire forzado remueve calor de campo rápidamente.</p>
+        </div>
+
+        <div class="glass-panel rounded-xl p-4 border-l-4 border-purple-400">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-slate-400">INOCUIDAD BPM / NTC</span>
+            <i class="fa-solid fa-shield-halved text-purple-400 text-lg"></i>
+          </div>
+          <div class="text-2xl font-orbitron font-bold text-white mt-1">99.8% Inocuo</div>
+          <p class="text-xs text-slate-400 mt-1">Desinfección controlada (100-150 ppm NaClO, pH 6.5-7.0).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 2: INTRODUCCIÓN Y FLUJO OPERATIVO                 -->
+    <!-- ========================================================= -->
+    <section id="sec-introduccion" class="section-view space-y-6">
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-emerald mb-2">
+          <i class="fa-solid fa-diagram-project mr-2"></i> FUNDAMENTACIÓN FISIOLÓGICA Y FLUJO DE CENTRO DE ACOPIO
+        </h2>
+        <p class="text-sm text-slate-300 max-w-4xl">
+          Una vez cosechado, el producto agrícola continúa siendo un <strong class="text-agro-cyan">órgano vivo</strong> que respira, transpira y senesce. A diferencia de los productos manufacturados, su calidad no puede mejorarse después de la cosecha: únicamente puede <strong class="text-agro-emerald">conservarse</strong> mediante el control estricto de la temperatura, humedad relativa, composición atmosférica y manejo mecánico.
+        </p>
+
+        <!-- Interactive 5-Stage Postharvest Flow Pipeline -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-5 gap-3" id="pipeline-steps">
+          <div onclick="selectPipelineStage(0)" class="pipeline-card cursor-pointer p-4 rounded-xl bg-slate-900/90 border-2 border-agro-emerald transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-agro-emerald font-bold">FASE 01</span>
+              <i class="fa-solid fa-scissors text-agro-emerald"></i>
+            </div>
+            <h3 class="font-orbitron text-sm font-bold text-white">Cosecha y Campo</h3>
+            <p class="text-xs text-slate-400 mt-1">Índices de madurez, corte limpio, sombra y canastillas ventiladas.</p>
+          </div>
+
+          <div onclick="selectPipelineStage(1)" class="pipeline-card cursor-pointer p-4 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-agro-cyan transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-agro-cyan font-bold">FASE 02</span>
+              <i class="fa-solid fa-scale-balanced text-agro-cyan"></i>
+            </div>
+            <h3 class="font-orbitron text-sm font-bold text-white">Recepción y Muestreo</h3>
+            <p class="text-xs text-slate-400 mt-1">Pesaje, trazabilidad de lote, °Brix, firmeza y control fitosanitario.</p>
+          </div>
+
+          <div onclick="selectPipelineStage(2)" class="pipeline-card cursor-pointer p-4 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-agro-cyan transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-agro-amber font-bold">FASE 03</span>
+              <i class="fa-solid fa-shower text-agro-amber"></i>
+            </div>
+            <h3 class="font-orbitron text-sm font-bold text-white">Acondicionamiento</h3>
+            <p class="text-xs text-slate-400 mt-1">Lavado, desinfección (ppm), secado, encerado y selección NTC.</p>
+          </div>
+
+          <div onclick="selectPipelineStage(3)" class="pipeline-card cursor-pointer p-4 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-agro-cyan transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-agro-cyan font-bold">FASE 04</span>
+              <i class="fa-solid fa-snowflake text-agro-cyan"></i>
+            </div>
+            <h3 class="font-orbitron text-sm font-bold text-white">Frío y Atmósfera</h3>
+            <p class="text-xs text-slate-400 mt-1">Preenfriamiento rápido, cuarto frío, HR% y empaque MAP.</p>
+          </div>
+
+          <div onclick="selectPipelineStage(4)" class="pipeline-card cursor-pointer p-4 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-agro-cyan transition">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-purple-400 font-bold">FASE 05</span>
+              <i class="fa-solid fa-truck-fast text-purple-400"></i>
+            </div>
+            <h3 class="font-orbitron text-sm font-bold text-white">Estibado y Despacho</h3>
+            <p class="text-xs text-slate-400 mt-1">Paletizado ventilado, compatibilidad de etileno y transporte refrigerado.</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Pipeline Stage Detail Box -->
+        <div id="pipeline-detail-box" class="mt-4 p-5 rounded-xl bg-agro-petrol/95 border border-agro-emerald/40">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Curricular Map of the 6 Modules -->
+      <div class="glass-panel-cyan rounded-2xl p-6">
+        <h3 class="font-orbitron text-lg font-bold text-agro-cyan mb-4">
+          <i class="fa-solid fa-sitemap mr-2"></i> MAPA CURRICULAR • COMPETENCIA 270403050 (MANEJO DE POSCOSECHA)
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="curricular-map-grid">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 3: BIBLIOTECA TÉCNICA DE POSCOSECHA (6 MÓDULOS)   -->
+    <!-- ========================================================= -->
+    <section id="sec-biblioteca" class="section-view space-y-6">
+      <div class="glass-panel rounded-2xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-emerald">
+              <i class="fa-solid fa-book-atlas mr-2"></i> BIBLIOTECA TÉCNICA DE POSCOSECHA AGRÍCOLA
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400">Enciclopedia técnica interactiva estructurada en los 6 módulos académicos del programa SENA.</p>
+          </div>
+          <span class="text-xs font-mono px-3 py-1.5 rounded-lg bg-agro-cyan/15 text-agro-cyan border border-agro-cyan/30">
+            Selecciona un módulo para estudiar sus fundamentos y fórmulas
+          </span>
+        </div>
+
+        <!-- 6 Module Tabs -->
+        <div class="flex flex-wrap gap-2 pb-4 border-b border-slate-800" id="library-tabs">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Module Content Display -->
+        <div id="library-content" class="mt-6">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 4: LABORATORIO 3D INTERACTIVO (THREE.JS)          -->
+    <!-- ========================================================= -->
+    <section id="sec-lab3d" class="section-view space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Left Selector: 8 Agroindustrial 3D Models -->
+        <div class="lg:col-span-3 glass-panel rounded-2xl p-4 space-y-3">
+          <h2 class="font-orbitron text-sm font-bold text-agro-emerald flex items-center gap-2">
+            <i class="fa-solid fa-cubes"></i> MODELOS 3D DE PLANTA (8)
+          </h2>
+          <p class="text-[11px] text-slate-400">Selecciona un equipo o estructura para inspeccionar su geometría, flujo y despiece virtual.</p>
+          <div class="space-y-1.5" id="lab3d-model-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Center WebGL Viewport + Controls -->
+        <div class="lg:col-span-6 glass-panel-cyan rounded-2xl p-4 flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span id="lab3d-current-title" class="font-orbitron text-sm font-bold text-white">1. Lavadora de Cepillos con Aspersores</span>
+            <span id="lab3d-picked-part" class="text-xs font-mono px-2.5 py-1 rounded bg-agro-amber/20 text-agro-amber border border-agro-amber/40">
+              Clic sobre una pieza 3D para inspeccionar
+            </span>
+          </div>
+
+          <!-- 3D Canvas Container -->
+          <div id="lab3d-canvas-container" class="w-full h-[380px] sm:h-[440px] rounded-xl bg-[#030b08] border border-slate-800 relative overflow-hidden cursor-grab active:cursor-grabbing"></div>
+
+          <!-- Interactive 3D Controls Bar -->
+          <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button onclick="toggleLabAnim()" id="btn-lab-anim" class="px-3 py-2 rounded-lg bg-agro-emerald/20 border border-agro-emerald text-agro-emerald font-mono text-xs font-bold hover:bg-agro-emerald/30 transition">
+              <i class="fa-solid fa-play mr-1"></i> Animación: ON
+            </button>
+            <button onclick="toggleLabExplode()" id="btn-lab-explode" class="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs hover:border-agro-amber transition">
+              <i class="fa-solid fa-up-right-and-down-left-from-center mr-1 text-agro-amber"></i> Despiece: OFF
+            </button>
+            <button onclick="toggleLabWireframe()" id="btn-lab-wire" class="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs hover:border-agro-cyan transition">
+              <i class="fa-solid fa-border-all mr-1 text-agro-cyan"></i> Rayos X: OFF
+            </button>
+            <button onclick="resetLabCamera()" class="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs hover:border-white transition">
+              <i class="fa-solid fa-crosshairs mr-1"></i> Centrar Cámara
+            </button>
+          </div>
+
+          <!-- Speed / Process Flow Slider -->
+          <div class="mt-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center gap-4">
+            <span class="text-xs font-mono text-agro-cyan whitespace-nowrap"><i class="fa-solid fa-gauge-high mr-1"></i> Velocidad / Flujo:</span>
+            <input type="range" id="lab3d-speed-slider" min="0" max="3" step="0.1" value="1" oninput="updateLabSpeed(this.value)">
+            <span id="lab3d-speed-val" class="text-xs font-mono font-bold text-agro-emerald w-12 text-right">1.0x</span>
+          </div>
+        </div>
+
+        <!-- Right Technical Datasheet Panel -->
+        <div class="lg:col-span-3 glass-panel rounded-2xl p-4 space-y-4 overflow-y-auto max-h-[600px]" id="lab3d-datasheet">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 5: SIMULADOR DE PROCESOS POSCOSECHA (8 BANCOS)    -->
+    <!-- ========================================================= -->
+    <section id="sec-simuladores" class="section-view space-y-5">
+      <div class="glass-panel rounded-2xl p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-cyan">
+              <i class="fa-solid fa-wave-square mr-2"></i> SIMULADORES BIOFÍSICOS DE POSCOSECHA (8 BANCOS DE PRUEBA)
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400">Manipula variables ambientales y operativas en tiempo real para observar la respuesta fisiológica y vida útil.</p>
+          </div>
+        </div>
+
+        <!-- 8 Simulator Selector Pills -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5" id="sim-selector-grid">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Active Simulator Workspace -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Left Controls & Live Telemetry -->
+          <div class="lg:col-span-4 space-y-4">
+            <div class="p-4 rounded-xl bg-slate-900/95 border border-agro-cyan/30 space-y-3" id="sim-controls-panel">
+              <!-- Dynamic Sliders Populated via JS -->
+            </div>
+
+            <!-- Live Telemetry Readout -->
+            <div class="p-4 rounded-xl bg-agro-petrol border border-agro-emerald/40 space-y-2.5" id="sim-telemetry-panel">
+              <!-- Live Calculated Metrics Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right Canvas 2D Simulation -->
+          <div class="lg:col-span-8 glass-panel-cyan rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 id="sim-canvas-title" class="font-orbitron text-sm font-bold text-white">Banco 1: Curva Respiratoria y Climaterio</h3>
+              <span id="sim-status-badge" class="text-xs font-mono px-2.5 py-0.5 rounded bg-agro-emerald/20 text-agro-emerald border border-agro-emerald/40">OPERACIÓN ÓPTIMA</span>
+            </div>
+            <div class="w-full h-[360px] rounded-xl bg-[#040c09] border border-slate-800 relative overflow-hidden">
+              <canvas id="sim-canvas-2d" class="w-full h-full block"></canvas>
+            </div>
+            <p id="sim-explanation" class="mt-3 text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+              <!-- Technical explanation populated via JS -->
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 6: LABORATORIO DE DIAGNÓSTICO DE DETERIORO (8)    -->
+    <!-- ========================================================= -->
+    <section id="sec-diagnostico" class="section-view space-y-5">
+      <div class="glass-panel rounded-2xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-amber">
+              <i class="fa-solid fa-stethoscope mr-2"></i> LABORATORIO DE DIAGNÓSTICO DE DETERIORO (8 ÓRDENES DE INSPECCIÓN)
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400">Analiza bitácoras de centro de acopio, identifica la causa raíz del daño y aplica el protocolo correctivo SENA.</p>
+          </div>
+          <div class="text-xs font-mono px-3 py-1.5 rounded-lg bg-agro-emerald/15 text-agro-emerald border border-agro-emerald/40">
+            Casos Resueltos: <span id="diag-solved-count" class="font-bold">0</span> / 8
+          </div>
+        </div>
+
+        <!-- 8 Case Tabs -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-6" id="diag-case-tabs">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Active Case Inspection Board -->
+        <div id="diag-workspace" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 7: ZONA DE CÁLCULOS TÉCNICOS DE POSCOSECHA        -->
+    <!-- ========================================================= -->
+    <section id="sec-calculos" class="section-view space-y-6">
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-emerald mb-1">
+          <i class="fa-solid fa-calculator mr-2"></i> ZONA DE CÁLCULOS TÉCNICOS DE POSCOSECHA
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mb-6">Herramientas matemáticas normalizadas para control de calidad, dosificación de desinfectantes, mermas y carga térmica.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Calc 1: Mermas y Pérdida de Peso -->
+          <div class="glass-panel-cyan rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="font-orbitron text-sm font-bold text-agro-cyan">1. PORCENTAJE DE MERMA Y PÉRDIDA DE PESO</h3>
+              <span class="text-xs font-mono bg-slate-900 px-2 py-1 rounded text-agro-emerald">%PP = [(Pi - Pf) / Pi] × 100</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Peso Inicial Lote (kg)</label>
+                <input type="number" id="calc1-pi" value="1200" min="1" oninput="calcMerma()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Peso Final Comercial (kg)</label>
+                <input type="number" id="calc1-pf" value="1116" min="0" oninput="calcMerma()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Precio Venta ($ COP/kg)</label>
+                <input type="number" id="calc1-precio" value="3800" min="0" oninput="calcMerma()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+            </div>
+            <div id="calc1-result" class="p-3.5 rounded-lg bg-slate-950/90 border border-agro-cyan/30 font-mono text-xs space-y-1"></div>
+          </div>
+
+          <!-- Calc 2: Dosificación de Hipoclorito de Sodio -->
+          <div class="glass-panel-cyan rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="font-orbitron text-sm font-bold text-agro-emerald">2. DOSIFICACIÓN DE DESINFECTANTE (PPM)</h3>
+              <span class="text-xs font-mono bg-slate-900 px-2 py-1 rounded text-agro-cyan">V₁ = (C₂ × V₂) / (C₁ × 10)</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Volumen Tanque (Litros)</label>
+                <input type="number" id="calc2-vol" value="500" min="1" oninput="calcCloro()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Concentración Deseada (ppm)</label>
+                <input type="number" id="calc2-ppm" value="120" min="1" oninput="calcCloro()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">% Cloro Activo Comercial</label>
+                <input type="number" id="calc2-conc" value="5.25" step="0.25" min="0.5" oninput="calcCloro()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+            </div>
+            <div id="calc2-result" class="p-3.5 rounded-lg bg-slate-950/90 border border-agro-emerald/30 font-mono text-xs space-y-1"></div>
+          </div>
+
+          <!-- Calc 3: Índice de Madurez -->
+          <div class="glass-panel-cyan rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="font-orbitron text-sm font-bold text-agro-amber">3. ÍNDICE DE MADUREZ (RELACIÓN °BRIX / ACIDEZ)</h3>
+              <span class="text-xs font-mono bg-slate-900 px-2 py-1 rounded text-agro-amber">IM = °Brix / % Acidez</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Sólidos Solubles (°Brix)</label>
+                <input type="number" id="calc3-brix" value="11.5" step="0.1" min="0.1" oninput="calcMadurez()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Acidez Titulable (%)</label>
+                <input type="number" id="calc3-acidez" value="0.85" step="0.05" min="0.05" oninput="calcMadurez()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Producto Referencia</label>
+                <select id="calc3-prod" onchange="calcMadurez()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs font-mono text-white">
+                  <option value="citrico">Naranja Valencia (IM 10-16)</option>
+                  <option value="pina">Piña Gold MD2 (IM 18-24)</option>
+                  <option value="mango">Mango Tommy (IM 14-20)</option>
+                  <option value="tomate">Tomate Chonto (IM 8-12)</option>
+                </select>
+              </div>
+            </div>
+            <div id="calc3-result" class="p-3.5 rounded-lg bg-slate-950/90 border border-agro-amber/30 font-mono text-xs space-y-1"></div>
+          </div>
+
+          <!-- Calc 4: Carga Térmica de Enfriamiento -->
+          <div class="glass-panel-cyan rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="font-orbitron text-sm font-bold text-purple-400">4. CARGA TÉRMICA DE PREENFRIAMIENTO (CALOR SENSIBLE)</h3>
+              <span class="text-xs font-mono bg-slate-900 px-2 py-1 rounded text-purple-400">Q = m · Cp · ΔT</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Masa Producto (kg)</label>
+                <input type="number" id="calc4-masa" value="2500" min="1" oninput="calcTermica()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Temp. Inicial Campo (°C)</label>
+                <input type="number" id="calc4-ti" value="28" oninput="calcTermica()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Temp. Final Objetivo (°C)</label>
+                <input type="number" id="calc4-tf" value="8" oninput="calcTermica()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white">
+              </div>
+            </div>
+            <div id="calc4-result" class="p-3.5 rounded-lg bg-slate-950/90 border border-purple-400/30 font-mono text-xs space-y-1"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 8: EVALUACIÓN INTERACTIVA POR 3 NIVELES           -->
+    <!-- ========================================================= -->
+    <section id="sec-evaluacion" class="section-view space-y-6">
+      <div class="glass-panel rounded-2xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-emerald">
+              <i class="fa-solid fa-award mr-2"></i> EVALUACIÓN DE COMPETENCIA POR NIVELES (SENA 270403050)
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400">Supera los 3 niveles progresivos y genera tu evidencia digital certificable.</p>
+          </div>
+          <button onclick="openSenaReport()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-agro-cyan to-blue-500 text-slate-950 font-orbitron font-bold text-xs flex items-center gap-2 hover:brightness-110 transition">
+            <i class="fa-solid fa-file-contract"></i> GENERAR REPORTE EVIDENCIA SENA
+          </button>
+        </div>
+
+        <!-- Level Selector Tabs -->
+        <div class="flex flex-wrap gap-3 mb-6">
+          <button onclick="switchEvalLevel(1)" id="eval-tab-1" class="px-4 py-2.5 rounded-xl bg-agro-emerald/20 border border-agro-emerald text-agro-emerald font-orbitron text-xs font-bold">
+            NIVEL 1: Identificación Visual y Conceptos
+          </button>
+          <button onclick="switchEvalLevel(2)" id="eval-tab-2" class="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 font-orbitron text-xs font-bold">
+            NIVEL 2: Relación Técnica y Criterios V/F
+          </button>
+          <button onclick="switchEvalLevel(3)" id="eval-tab-3" class="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 font-orbitron text-xs font-bold">
+            NIVEL 3: Casos Prácticos de Centro de Acopio
+          </button>
+        </div>
+
+        <!-- Level Containers -->
+        <div id="eval-content-area">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECCIÓN 9: RECURSOS DE APRENDIZAJE Y NORMATIVIDAD         -->
+    <!-- ========================================================= -->
+    <section id="sec-recursos" class="section-view space-y-6">
+      <!-- Normativity Cards -->
+      <div class="glass-panel rounded-2xl p-6">
+        <h2 class="font-orbitron text-xl sm:text-2xl font-bold text-agro-cyan mb-4">
+          <i class="fa-solid fa-scale-balanced mr-2"></i> MARCO NORMATIVO Y ESTÁNDARES DE POSCOSECHA
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-slate-900/90 border border-agro-emerald/30">
+            <span class="text-xs font-mono text-agro-emerald font-bold">MINISTERIO DE SALUD • COLOMBIA</span>
+            <h3 class="font-orbitron text-sm font-bold text-white mt-1">Resolución 2674 de 2013</h3>
+            <p class="text-xs text-slate-300 mt-2">Establece los requisitos sanitarios y Buenas Prácticas de Manufactura (BPM) para plantas de acondicionamiento, lavado, empaque y almacenamiento de alimentos.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/90 border border-agro-cyan/30">
+            <span class="text-xs font-mono text-agro-cyan font-bold">ICONTEC • NORMAS TÉCNICAS</span>
+            <h3 class="font-orbitron text-sm font-bold text-white mt-1">Normas Técnicas Colombianas (NTC)</h3>
+            <p class="text-xs text-slate-300 mt-2">Clasificación por calidades (Extra, I, II), calibres y tolerancias: NTC 1266 (Cítricos), NTC 5209 (Aguacate Hass), NTC 1103 (Tomate), NTC 1190 (Plátano/Banano).</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900/90 border border-agro-amber/30">
+            <span class="text-xs font-mono text-agro-amber font-bold">FAO / OMS • ESTÁNDAR GLOBAL</span>
+            <h3 class="font-orbitron text-sm font-bold text-white mt-1">Codex Alimentarius (CXC 53-2003)</h3>
+            <p class="text-xs text-slate-300 mt-2">Código de prácticas de higiene para frutas y hortalizas frescas, control de agua de lavado, trazabilidad de lotes y límites máximos de residuos (LMR).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Master Optimal Storage Table with Search & Filter -->
+      <div class="glass-panel-cyan rounded-2xl p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <h3 class="font-orbitron text-lg font-bold text-agro-emerald">
+              <i class="fa-solid fa-table-list mr-2"></i> TABLA MAESTRA DE CONDICIONES ÓPTIMAS DE ALMACENAMIENTO
+            </h3>
+            <p class="text-xs text-slate-400">Parámetros fisiológicos críticos para productos agrícolas colombianos.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <input type="text" id="table-search" onkeyup="filterStorageTable()" placeholder="Buscar producto (ej. Aguacate, Mango)..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:border-agro-emerald focus:outline-none">
+            <select id="table-filter-type" onchange="filterStorageTable()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
+              <option value="ALL">Todos los tipos</option>
+              <option value="Climatérico">Climatéricos</option>
+              <option value="No Climatérico">No Climatéricos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-agro-emerald/40 text-agro-emerald font-mono bg-slate-900/80">
+                <th class="p-3">Producto Agrícola</th>
+                <th class="p-3">Comportamiento</th>
+                <th class="p-3">Temp. Óptima (°C)</th>
+                <th class="p-3">Humedad Relativa (%)</th>
+                <th class="p-3">Sensibilidad Etileno</th>
+                <th class="p-3">Vida Útil Estimada</th>
+                <th class="p-3">Riesgo Principal</th>
+              </tr>
+            </thead>
+            <tbody id="storage-table-body" class="divide-y divide-slate-800/80">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mixed Storage Compatibility Matrix -->
+      <div class="glass-panel rounded-2xl p-6">
+        <h3 class="font-orbitron text-lg font-bold text-agro-amber mb-3">
+          <i class="fa-solid fa-layer-group mr-2"></i> MATRIZ DE COMPATIBILIDAD DE ALMACENAMIENTO MIXTO
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-cyan-950/40 border border-agro-cyan/40">
+            <div class="font-orbitron font-bold text-agro-cyan mb-2">GRUPO 1: FRÍO INTENSO (0°C a 2°C • HR 90-95%)</div>
+            <p class="text-slate-300 mb-2"><strong>Productos:</strong> Mora, fresa, lechuga, brócoli, zanahoria, cilantro, cebolla larga.</p>
+            <p class="text-amber-300 font-mono text-[11px]"><i class="fa-solid fa-triangle-exclamation mr-1"></i> NO mezclar brócoli/lechuga con manzana o pera (amarillamiento por etileno).</p>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-950/40 border border-agro-emerald/40">
+            <div class="font-orbitron font-bold text-agro-emerald mb-2">GRUPO 2: FRÍO MODERADO (7°C a 10°C • HR 85-90%)</div>
+            <p class="text-slate-300 mb-2"><strong>Productos:</strong> Naranja, mandarina, limón Tahití, piña, maracuyá, pimentón, pepino.</p>
+            <p class="text-amber-300 font-mono text-[11px]"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Pepino y pimentón son altamente sensibles al etileno producido por maracuyá.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-amber-950/40 border border-agro-amber/40">
+            <div class="font-orbitron font-bold text-agro-amber mb-2">GRUPO 3: TROPICALES SENSIBLES AL FRÍO (12°C a 15°C)</div>
+            <p class="text-slate-300 mb-2"><strong>Productos:</strong> Banano, plátano, mango, papaya, aguacate, tomate pintón, ñame.</p>
+            <p class="text-rose-300 font-mono text-[11px]"><i class="fa-solid fa-skull-crossbones mr-1"></i> Por debajo de 10-12°C sufren daño por frío (escaldado interno y fallo de maduración).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="glass-panel border-t border-slate-800 py-4 px-6 mt-10 text-xs text-slate-400">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <strong class="text-agro-emerald font-orbitron">AGRO-LAB 4.0</strong> • Servicio Nacional de Aprendizaje SENA • Competencia 270403050: Manejo de Poscosecha de Productos Agrícolas
+      </div>
+      <div class="font-mono text-[11px] text-slate-400">
+        Diseño Instruccional y Simulador: <span class="text-agro-cyan">INSTRUCTOR. Carlos Julio Rhenals Ospino</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- FLOATING VIRTUAL ASSISTANT: AGROBOT POSCOSECHA SENA       -->
+  <!-- ========================================================= -->
+  <div class="fixed bottom-5 right-5 z-50">
+    <!-- Chat Window -->
+    <div id="agrobot-window" class="hidden mb-3 w-80 sm:w-96 glass-panel rounded-2xl border border-agro-emerald/50 shadow-2xl overflow-hidden flex flex-col">
+      <div class="bg-gradient-to-r from-agro-petrol to-slate-900 p-3.5 border-b border-agro-emerald/30 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-agro-emerald/20 border border-agro-emerald flex items-center justify-center">
+            <i class="fa-solid fa-robot text-agro-emerald text-sm"></i>
+          </div>
+          <div>
+            <div class="font-orbitron text-xs font-bold text-white">AgroBot Poscosecha</div>
+            <div class="text-[10px] font-mono text-agro-emerald">Soporte Técnico SENA • En Línea</div>
+          </div>
+        </div>
+        <button onclick="toggleAgroBot()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Messages Feed -->
+      <div id="agrobot-messages" class="p-3.5 h-64 overflow-y-auto space-y-2.5 text-xs">
+        <div class="p-2.5 rounded-xl bg-slate-900/90 border border-agro-emerald/30 text-slate-200">
+          ¡Hola aprendiz! Soy <strong>AgroBot Poscosecha</strong>. Consúltame sobre productos climatéricos, dosis de cloro en ppm, índice de madurez, cadena de frío o normatividad NTC/Res. 2674.
+        </div>
+      </div>
+
+      <!-- Quick Query Buttons -->
+      <div class="px-3 py-2 bg-slate-950/70 border-t border-slate-800 flex gap-1.5 overflow-x-auto">
+        <button onclick="askAgroBotQuick('¿Diferencia entre climatérico y no climatérico?')" class="whitespace-nowrap px-2 py-1 rounded bg-slate-800 hover:bg-agro-emerald/20 text-[10px] text-agro-emerald border border-agro-emerald/30">Climatéricos</button>
+        <button onclick="askAgroBotQuick('¿Cómo calcular ppm de cloro?')" class="whitespace-nowrap px-2 py-1 rounded bg-slate-800 hover:bg-agro-cyan/20 text-[10px] text-agro-cyan border border-agro-cyan/30">Dosis Cloro PPM</button>
+        <button onclick="askAgroBotQuick('¿Qué es daño por frío?')" class="whitespace-nowrap px-2 py-1 rounded bg-slate-800 hover:bg-agro-amber/20 text-[10px] text-agro-amber border border-agro-amber/30">Daño por Frío</button>
+        <button onclick="askAgroBotQuick('¿Qué exige la Resolución 2674?')" class="whitespace-nowrap px-2 py-1 rounded bg-slate-800 hover:bg-purple-500/20 text-[10px] text-purple-300 border border-purple-400/30">Res. 2674</button>
+      </div>
+
+      <!-- Input Box -->
+      <form onsubmit="handleAgroBotSubmit(event)" class="p-2.5 bg-slate-900 border-t border-slate-800 flex gap-2">
+        <input id="agrobot-input" type="text" placeholder="Escribe tu consulta técnica..." class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:border-agro-emerald focus:outline-none">
+        <button type="submit" class="px-3 py-1.5 rounded-lg bg-agro-emerald text-slate-950 font-bold text-xs hover:brightness-110">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Floating Toggle Button -->
+    <button onclick="toggleAgroBot()" class="ml-auto flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-agro-emerald to-agro-cyan text-slate-950 font-orbitron font-bold text-xs shadow-lg shadow-agro-emerald/30 hover:scale-105 transition">
+      <i class="fa-solid fa-robot text-base"></i>
+      <span class="hidden sm:inline">AgroBot Poscosecha • SENA</span>
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: REPORTE EVIDENCIA DE APRENDIZAJE SENA              -->
+  <!-- ========================================================= -->
+  <div id="sena-report-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-agro-emerald rounded-2xl max-w-2xl w-full p-6 space-y-4 text-slate-200 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-certificate text-agro-emerald text-2xl"></i>
+          <div>
+            <h3 class="font-orbitron font-bold text-base text-white">REPORTE DE DESEMPEÑO • EVIDENCIA DE APRENDIZAJE SENA</h3>
+            <p class="text-xs font-mono text-agro-cyan">Competencia 270403050: Manejo de Poscosecha de Productos Agrícolas</p>
+          </div>
+        </div>
+        <button onclick="closeSenaReport()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div id="sena-report-body" class="space-y-3 text-xs">
+        <!-- Populated via JS -->
+      </div>
+
+      <div class="flex justify-end gap-3 pt-3 border-t border-slate-700">
+        <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-agro-emerald text-slate-950 font-orbitron font-bold text-xs">
+          <i class="fa-solid fa-print mr-1"></i> IMPRIMIR / GUARDAR PDF
+        </button>
+        <button onclick="closeSenaReport()" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-mono text-xs">
+          CERRAR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- JAVASCRIPT APPLICATION LOGIC                              -->
+  <!-- ========================================================= -->
+  <script>
+    // ===========================================================
+    // 1. GLOBAL STATE & TELEMETRY
+    // ===========================================================
+    const appState = {
+      visitedSections: new Set(['inicio']),
+      score: 0,
+      apprenticeName: '',
+      solvedCases: new Set(),
+      completedEvalItems: new Set(),
+      currentSimId: 0,
+      currentLabModelId: 0,
+      currentDiagCaseId: 0
+    };
+
+    function addScore(points, key) {
+      if (key && appState.completedEvalItems.has(key)) return;
+      if (key) appState.completedEvalItems.add(key);
+      appState.score += points;
+      document.getElementById('hud-score').textContent = appState.score;
+    }
+
+    function updateProgress() {
+      const totalSections = 9;
+      const pct = Math.min(100, Math.round((appState.visitedSections.size / totalSections) * 100));
+      document.getElementById('hud-progress-text').textContent = pct + '%';
+      document.getElementById('hud-progress-bar').style.width = pct + '%';
+    }
+
+    function saveApprenticeName(val) {
+      appState.apprenticeName = val.trim();
+    }
+
+    function switchSection(secId) {
+      document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+      document.getElementById('sec-' + secId).classList.add('active');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sec === secId);
+      });
+
+      appState.visitedSections.add(secId);
+      updateProgress();
+
+      // Trigger resize for 3D or 2D canvases when becoming visible
+      if (secId === 'lab3d') {
+        setTimeout(resizeLab3D, 60);
+      } else if (secId === 'simuladores') {
+        setTimeout(resizeSim2D, 60);
+      } else if (secId === 'inicio') {
+        setTimeout(resizeHero3D, 60);
+      }
+    }
+
+    // ===========================================================
+    // 2. SECCIÓN 2: INTRODUCCIÓN & PIPELINE DATA
+    // ===========================================================
+    const pipelineStages = [
+      {
+        title: "FASE 01: COSECHA Y MANEJO EN CAMPO",
+        kpi: "Pérdida potencial evitada: hasta 25% por corte técnico y sombra",
+        desc: "Ejecución de la recolección en horas frescas del día (6:00 a.m. - 9:30 a.m.) verificando índices físicos y químicos de madurez. Uso de tijeras desinfectadas para evitar desgarros pedunculares y acopio bajo polisombra en canastillas plásticas limpias con capacidad máxima de 18-20 kg sin sobrellenado.",
+        critical: "Evitar caídas mayores a 15 cm y exposición directa a radiación solar (incrementa calor de campo)."
+      },
+      {
+        title: "FASE 02: RECEPCIÓN, PESADO Y MUESTREO DE CALIDAD",
+        kpi: "Trazabilidad 100% por lote, productor y parcela",
+        desc: "Registro documental del lote entrante, pesaje en báscula calibrada, inspección visual de defectos mayores/menores y muestreo aleatorio para medición destructiva y no destructiva: firmeza (penetrómetro), sólidos solubles totales (°Brix por refractometría) y temperatura de pulpa.",
+        critical: "Rechazar o segregar lotes con presencia de pudrición activa o plagas cuarentenarias para evitar contaminación cruzada."
+      },
+      {
+        title: "FASE 03: ACONDICIONAMIENTO, DESINFECCIÓN Y CLASIFICACIÓN",
+        kpi: "Reducción microbiana > 99.5% en tanque de lavado",
+        desc: "Eliminación de tierra, látex y carga microbiana mediante lavado por aspersión o inmersión con hipoclorito de sodio (100-150 ppm, pH 6.5-7.0) o ácido peracético. Posteriormente se realiza secado superficial, aplicación de cera grado alimentario (para reducir transpiración) y clasificación por tamaño y categoría NTC.",
+        critical: "Monitorear pH y cloro libre cada hora: si el pH supera 8.0, el ácido hipocloroso pierde su eficacia desinfectante."
+      },
+      {
+        title: "FASE 04: PREENFRIAMIENTO Y CADENA DE FRÍO",
+        kpi: "Regla Q10: Por cada 10°C de reducción, la respiración cae 2 a 3 veces",
+        desc: "Remoción acelerada del calor de campo mediante túnel de aire forzado o hidroenfriamiento antes de ingresar al cuarto frío de almacenamiento. Se mantiene humedad relativa alta (85-95%) para minimizar el Déficit de Presión de Vapor (DPV) y evitar pérdida de peso por transpiración.",
+        critical: "Respetar el umbral de temperatura crítica en frutos tropicales (ej. banano, mango, aguacate) para prevenir daño por frío."
+      },
+      {
+        title: "FASE 05: EMPAQUE, ESTIBADO Y TRANSPORTE REFRIGERADO",
+        kpi: "Flujo de aire vertical/horizontal continuo sin bloqueos",
+        desc: "Empaque en cajas de cartón corrugado ventilado o canastillas encajables alineadas sobre estibas plásticas (nunca en contacto directo con el piso). Verificación de compatibilidad de etileno en cargas mixtas y preenfriamiento previo del furgón isotérmico antes del cargue.",
+        critical: "Dejar separación mínima de 15 cm entre estibas y paredes del cuarto frío para garantizar circulación uniforme del aire."
+      }
+    ];
+
+    function selectPipelineStage(idx) {
+      const cards = document.querySelectorAll('.pipeline-card');
+      cards.forEach((c, i) => {
+        if (i === idx) {
+          c.classList.add('border-2', 'border-agro-emerald');
+          c.classList.remove('border', 'border-slate-700');
+        } else {
+          c.classList.remove('border-2', 'border-agro-emerald');
+          c.classList.add('border', 'border-slate-700');
+        }
+      });
+
+      const s = pipelineStages[idx];
+      document.getElementById('pipeline-detail-box').innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <h4 class="font-orbitron font-bold text-agro-emerald text-sm sm:text-base">${s.title}</h4>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-agro-cyan/15 text-agro-cyan border border-agro-cyan/30">${s.kpi}</span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed mb-2">${s.desc}</p>
+        <div class="text-xs font-mono text-agro-amber bg-slate-950/70 p-2.5 rounded-lg border border-agro-amber/30">
+          <i class="fa-solid fa-triangle-exclamation mr-1"></i> PUNTO CRÍTICO DE CONTROL: ${s.critical}
+        </div>
+      `;
+    }
+
+    // ===========================================================
+    // 3. SECCIÓN 3: BIBLIOTECA TÉCNICA (6 MÓDULOS ACADÉMICOS)
+    // ===========================================================
+    const academicModules = [
+      {
+        id: 1,
+        short: "Módulo 1: Fisiología",
+        title: "Módulo 1. Fisiología Poscosecha y Calidad",
+        icon: "fa-leaf",
+        summary: "Comprende los procesos metabólicos que continúan tras la separación de la planta madre y determinan la velocidad de envejecimiento.",
+        topics: [
+          {
+            subtitle: "Productos Climatéricos vs. No Climatéricos",
+            body: "Los frutos <strong>climatéricos</strong> (banano, plátano, mango, aguacate, papaya, tomate, guayaba) presentan un pico abrupto en la tasa respiratoria y producción autocatalítica de etileno que permite completar su maduración organoléptica después de cosechados en madurez fisiológica. Los <strong>no climatéricos</strong> (cítricos, piña, fresa, mora, uchuva, pepino, pimentón) declinan gradualmente su respiración y deben cosecharse en madurez de consumo.",
+            formula: "C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + Calor Vital (2870 kJ/mol)"
+          },
+          {
+            subtitle: "Transpiración y Déficit de Presión de Vapor (DPV)",
+            body: "La pérdida de agua en forma de vapor a través de estomas, lenticelas y cutícula genera pérdida de peso vendible, marchitez y pérdida de turgencia. Una pérdida de peso superior al 5-8% deprecia comercialmente la mayoría de frutas y hortalizas.",
+            formula: "DPV = P_sat(T_producto) × (1 - HR / 100)"
+          },
+          {
+            subtitle: "Índices Físico-Químicos de Madurez",
+            body: "Se evalúan mediante color externo (escala CIELAB o tablas de color), firmeza de pulpa (kgf o Newtons con penetrómetro), Sólidos Solubles Totales (°Brix) y Acidez Titulable (% ácido cítrico o málico predominante).",
+            formula: "Índice de Madurez (IM) = °Brix / % Acidez Titulable"
+          }
+        ]
+      },
+      {
+        id: 2,
+        short: "Módulo 2: Cosecha y Recepción",
+        title: "Módulo 2. Operaciones de Cosecha y Recepción en Acopio",
+        icon: "fa-basket-shopping",
+        summary: "Protocolos operativos en campo y centro de acopio para preservar la integridad estructural y garantizar trazabilidad.",
+        topics: [
+          {
+            subtitle: "Prevención de Daños Mecánicos",
+            body: "Los tres mecanismos principales son: <strong>1) Impacto</strong> (golpes por caída libre al vaciar recipientes), <strong>2) Compresión</strong> (sobrellenado de canastillas o bultos apilados) y <strong>3) Vibración/Abrasión</strong> (roce continuo durante transporte en vías terciarias). Cada herida dispara la respiración y abre puerta a hongos.",
+            formula: "Altura máxima caída segura < 15 cm | Llenado canastilla ≤ 85% altura"
+          },
+          {
+            subtitle: "Trazabilidad y Muestreo en Recepción",
+            body: "Todo lote recibido en centro de acopio debe identificarse con código de productor, fecha, hora de corte, variedad y peso neto. Se aplica muestreo representativo (√N + 1 empaques) para evaluar porcentaje de defectos mecánicos, fitosanitarios y madurez.",
+            formula: "Muestra Inspección (n) = √(Total Bultos) + 1"
+          }
+        ]
+      },
+      {
+        id: 3,
+        short: "Módulo 3: Acondicionamiento",
+        title: "Módulo 3. Acondicionamiento y Tratamientos Poscosecha",
+        icon: "fa-spray-can-sparkles",
+        summary: "Operaciones unitarias de limpieza, desinfección, encerado y clasificación según Normas Técnicas Colombianas.",
+        topics: [
+          {
+            subtitle: "Desinfección de Agua de Lavado",
+            body: "El <strong>hipoclorito de sodio (NaClO)</strong> a 100-150 ppm requiere mantener el pH entre 6.5 y 7.0 para maximizar el ácido hipocloroso (HOCl). Alternativas limpias incluyen <strong>ácido peracético</strong> (50-80 ppm, efectivo en amplio rango de pH y sin subproductos clorados) y agua ozonizada.",
+            formula: "mL NaClO = (ppm deseada × Litros agua) / (% Cloro comercial × 10)"
+          },
+          {
+            subtitle: "Encerado y Tratamientos Hidrotérmicos",
+            body: "La aplicación de ceras grado alimentario (carnauba, candelilla, goma laca) repone la cutícula natural removida en el lavado, reduce la transpiración en 30-40% y mejora el brillo. En mango de exportación se emplea tratamiento hidrotérmico (46.1°C por 65-90 min) para control cuarentenario.",
+            formula: "Espesor película cera: 2 - 5 micras (evitar bloqueo total de lenticelas)"
+          }
+        ]
+      },
+      {
+        id: 4,
+        short: "Módulo 4: Cadena de Frío",
+        title: "Módulo 4. Preenfriamiento y Cadena de Frío",
+        icon: "fa-snowflake",
+        summary: "Ingeniería térmica aplicada a la remoción del calor de campo y almacenamiento refrigerado.",
+        topics: [
+          {
+            subtitle: "Métodos de Preenfriamiento",
+            body: "<strong>Aire forzado:</strong> Crea un gradiente de presión estática que obliga al aire frío a pasar a través de las perforaciones de las cajas (enfría 6-10 veces más rápido que cuarto frío convencional). <strong>Hidroenfriamiento:</strong> Ducha o inmersión en agua helada (0-2°C), ideal para hortalizas tolerantes al agua.",
+            formula: "Tiempo 7/8 = Tiempo para remover 87.5% de (T_inicial - T_medio)"
+          },
+          {
+            subtitle: "Daño por Frío (Chilling Injury)",
+            body: "Alteración fisiológica irreversible que ocurre en productos de origen tropical/subtropical al exponerse a temperaturas superiores al punto de congelación pero inferiores a su umbral crítico (ej. <12°C en banano, <10°C en mango). Causa picado de piel, oscurecimiento vascular y susceptibilidad a hongos.",
+            formula: "Q_sensible = m × Cp × (T_campo - T_almacenamiento)"
+          }
+        ]
+      },
+      {
+        id: 5,
+        short: "Módulo 5: Atmósferas y Empaque",
+        title: "Módulo 5. Atmósferas Modificadas/Controladas y Empaque",
+        icon: "fa-box-open",
+        summary: "Control gaseoso mediante películas poliméricas selectivas, absorbedores de etileno y empaques ventilados.",
+        topics: [
+          {
+            subtitle: "Atmósfera Modificada (MAP) y Controlada (CA)",
+            body: "Consiste en reducir el oxígeno (O₂ al 2-5%) e incrementar el dióxido de carbono (CO₂ al 3-10%) alrededor del producto para frenar la respiración y la síntesis de etileno. Si el O₂ cae por debajo del punto de extinción anaeróbica (<1%), ocurre fermentación con olores a etanol/acetaldehído.",
+            formula: "Equilibrio MAP: Tasa Consumo O₂ = Permeabilidad Película × ΔP(O₂)"
+          },
+          {
+            subtitle: "Control de Etileno y Diseño de Empaques",
+            body: "Se emplean sobres absorbedores con <strong>permanganato de potasio (KMnO₄)</strong> que oxidan el etileno a etilenglicol y CO₂, o inhibidores de acción como el <strong>1-MCP (1-metilciclopropeno)</strong>. Las cajas deben tener entre 5% y 8% de área perforada alineada.",
+            formula: "C₂H₄ + KMnO₄ → MnO₂ (cambio color púrpura a marrón) + CO₂ + H₂O"
+          }
+        ]
+      },
+      {
+        id: 6,
+        short: "Módulo 6: Inocuidad y Gestión",
+        title: "Módulo 6. Inocuidad, Normatividad y Gestión de Pérdidas",
+        icon: "fa-shield-virus",
+        summary: "Aseguramiento sanitario BPM, control de patógenos poscosecha y gestión administrativa de mermas.",
+        topics: [
+          {
+            subtitle: "Principales Patógenos Poscosecha",
+            body: "<strong>Penicillium digitatum / italicum:</strong> Moho verde y azul en cítricos (requiere heridas en cáscara). <strong>Colletotrichum gloeosporioides:</strong> Antracnosis latente en mango, papaya y aguacate que se expresa al madurar. <strong>Botrytis cinerea:</strong> Moho gris en fresa y mora. <strong>Pectobacterium (Erwinia):</strong> Pudrición blanda bacteriana favorecida por agua sucia.",
+            formula: "Incidencia (%) = (Frutos enfermos / Total frutos evaluados) × 100"
+          },
+          {
+            subtitle: "Gestión Administrativa y Sostenibilidad",
+            body: "La reducción de pérdidas poscosecha incrementa directamente el margen neto del productor rural sin aumentar el área sembrada. Los descartes orgánicos sanos deben valorizarse hacia subproductos (pulpas, deshidratados, compostaje).",
+            formula: "Pérdida Económica ($) = kg Merma × Precio Venta Unitario"
+          }
+        ]
+      }
+    ];
+
+    function renderCurricularMap() {
+      const grid = document.getElementById('curricular-map-grid');
+      grid.innerHTML = academicModules.map(m => `
+        <div onclick="switchSection('biblioteca'); selectLibraryModule(${m.id - 1})" class="cursor-pointer p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-agro-emerald transition group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-agro-emerald font-bold">MÓDULO 0${m.id}</span>
+            <i class="fa-solid ${m.icon} text-agro-cyan group-hover:scale-110 transition"></i>
+          </div>
+          <h4 class="font-orbitron text-xs font-bold text-white mb-1">${m.title}</h4>
+          <p class="text-xs text-slate-400 line-clamp-2">${m.summary}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderLibraryTabs() {
+      const tabs = document.getElementById('library-tabs');
+      tabs.innerHTML = academicModules.map((m, idx) => `
+        <button onclick="selectLibraryModule(${idx})" id="lib-tab-${idx}" class="px-3.5 py-2 rounded-xl text-xs font-orbitron font-bold transition ${idx === 0 ? 'bg-agro-emerald/20 border border-agro-emerald text-agro-emerald' : 'bg-slate-900 border border-slate-700 text-slate-300 hover:border-agro-cyan'}">
+          <i class="fa-solid ${m.icon} mr-1.5"></i> ${m.short}
+        </button>
+      `).join('');
+      selectLibraryModule(0);
+    }
+
+    function selectLibraryModule(idx) {
+      academicModules.forEach((_, i) => {
+        const btn = document.getElementById('lib-tab-' + i);
+        if (btn) {
+          btn.className = i === idx
+            ? 'px-3.5 py-2 rounded-xl text-xs font-orbitron font-bold transition bg-agro-emerald/20 border border-agro-emerald text-agro-emerald'
+            : 'px-3.5 py-2 rounded-xl text-xs font-orbitron font-bold transition bg-slate-900 border border-slate-700 text-slate-300 hover:border-agro-cyan';
+        }
+      });
+
+      const mod = academicModules[idx];
+      addScore(5, 'lib-mod-' + idx);
+
+      document.getElementById('library-content').innerHTML = `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-agro-petrol/90 border border-agro-cyan/30">
+            <h3 class="font-orbitron text-base sm:text-lg font-bold text-white">${mod.title}</h3>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">${mod.summary}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${mod.topics.length >= 3 ? '3' : '2'} gap-4">
+            ${mod.topics.map(t => `
+              <div class="p-5 rounded-xl bg-slate-900/95 border border-slate-800 flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 class="font-orbitron text-sm font-bold text-agro-emerald mb-2">${t.subtitle}</h4>
+                  <p class="text-xs text-slate-300 leading-relaxed">${t.body}</p>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-950 border border-agro-cyan/30 font-mono text-[11px] text-agro-cyan">
+                  <i class="fa-solid fa-square-root-variable mr-1 text-agro-amber"></i> ${t.formula}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ===========================================================
+    // 4. HERO 3D SCENE (THREE.JS AUTOMATED LINE)
+    // ===========================================================
+    let heroScene, heroCamera, heroRenderer, heroControls, heroLineGroup;
+    let heroFruits = [];
+    let heroAutoRotate = true;
+
+    function initHero3D() {
+      const container = document.getElementById('hero-3d-container');
+      if (!container || typeof THREE === 'undefined') return;
+
+      heroScene = new THREE.Scene();
+      heroScene.fog = new THREE.FogExp2(0x030b08, 0.035);
+
+      const w = container.clientWidth || 500;
+      const h = container.clientHeight || 320;
+      heroCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+      heroCamera.position.set(6.5, 5.2, 8.5);
+
+      heroRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      heroRenderer.setSize(w, h);
+      heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(heroRenderer.domElement);
+
+      heroControls = new THREE.OrbitControls(heroCamera, heroRenderer.domElement);
+      heroControls.enableDamping = true;
+      heroControls.autoRotate = heroAutoRotate;
+      heroControls.autoRotateSpeed = 1.4;
+
+      // Lights
+      heroScene.add(new THREE.AmbientLight(0x406055, 1.4));
+      const dirLight = new THREE.DirectionalLight(0x00ff88, 1.5);
+      dirLight.position.set(8, 12, 6);
+      heroScene.add(dirLight);
+      const cyanLight = new THREE.PointLight(0x00e5ff, 1.5, 20);
+      cyanLight.position.set(-5, 4, -3);
+      heroScene.add(cyanLight);
+
+      // Grid floor
+      const grid = new THREE.GridHelper(20, 20, 0x00ff88, 0x0d2820);
+      grid.position.y = -1.2;
+      heroScene.add(grid);
+
+      heroLineGroup = new THREE.Group();
+
+      // Conveyor Belt Frame
+      const beltGeo = new THREE.BoxGeometry(10, 0.25, 1.8);
+      const beltMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7, roughness: 0.3 });
+      const belt = new THREE.Mesh(beltGeo, beltMat);
+      belt.position.y = 0;
+      heroLineGroup.add(belt);
+
+      // Side Rails
+      const railGeo = new THREE.BoxGeometry(10.2, 0.4, 0.12);
+      const railMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, metalness: 0.8, roughness: 0.2 });
+      const rail1 = new THREE.Mesh(railGeo, railMat);
+      rail1.position.set(0, 0.2, 0.92);
+      const rail2 = rail1.clone();
+      rail2.position.z = -0.92;
+      heroLineGroup.add(rail1, rail2);
+
+      // Support Legs
+      const legGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.2, 12);
+      for (let x of [-4.2, 0, 4.2]) {
+        for (let z of [-0.75, 0.75]) {
+          const leg = new THREE.Mesh(legGeo, beltMat);
+          leg.position.set(x, -0.6, z);
+          heroLineGroup.add(leg);
+        }
+      }
+
+      // Washing & Spraying Arch Hood
+      const archGeo = new THREE.BoxGeometry(2.6, 1.4, 2.1);
+      const archMat = new THREE.MeshPhysicalMaterial({
+        color: 0x00e5ff,
+        transparent: true,
+        opacity: 0.28,
+        roughness: 0.1,
+        metalness: 0.2
+      });
+      const arch = new THREE.Mesh(archGeo, archMat);
+      arch.position.set(-2.2, 0.85, 0);
+      heroLineGroup.add(arch);
+
+      // Rotating Brushes inside Arch
+      const brushGeo = new THREE.CylinderGeometry(0.28, 0.28, 1.7, 16);
+      brushGeo.rotateX(Math.PI / 2);
+      const brushMat = new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.6 });
+      for (let bx of [-2.8, -2.2, -1.6]) {
+        const brush = new THREE.Mesh(brushGeo, brushMat);
+        brush.position.set(bx, 0.42, 0);
+        brush.userData.isBrush = true;
+        heroLineGroup.add(brush);
+      }
+
+      // Waxing & Optical Scanner Tunnel
+      const scanGeo = new THREE.BoxGeometry(2.2, 1.3, 2.0);
+      const scanMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.2 });
+      const scanner = new THREE.Mesh(scanGeo, scanMat);
+      scanner.position.set(1.8, 0.8, 0);
+      heroLineGroup.add(scanner);
+
+      // Laser scan plane
+      const laserGeo = new THREE.PlaneGeometry(1.7, 1.0);
+      const laserMat = new THREE.MeshBasicMaterial({ color: 0xff9e00, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+      const laser = new THREE.Mesh(laserGeo, laserMat);
+      laser.rotation.y = Math.PI / 2;
+      laser.position.set(1.8, 0.65, 0);
+      heroLineGroup.add(laser);
+
+      // Fruits moving along belt
+      const fruitGeo = new THREE.SphereGeometry(0.22, 18, 18);
+      const colors = [0xff7b00, 0xff9e00, 0x70e000, 0xff5400];
+      for (let i = 0; i < 14; i++) {
+        const fMat = new THREE.MeshStandardMaterial({
+          color: colors[i % colors.length],
+          roughness: 0.35,
+          metalness: 0.1
+        });
+        const fruit = new THREE.Mesh(fruitGeo, fMat);
+        fruit.position.set(-4.5 + i * 0.68, 0.32, (i % 2 === 0 ? 0.32 : -0.32));
+        heroLineGroup.add(fruit);
+        heroFruits.push(fruit);
+      }
+
+      heroScene.add(heroLineGroup);
+    }
+
+    function toggleHeroRotation() {
+      heroAutoRotate = !heroAutoRotate;
+      if (heroControls) heroControls.autoRotate = heroAutoRotate;
+      document.getElementById('hero-rot-btn').innerHTML = `<i class="fa-solid fa-rotate mr-1 text-agro-emerald"></i> Auto-Giro: ${heroAutoRotate ? 'ON' : 'OFF'}`;
+    }
+
+    function resizeHero3D() {
+      const container = document.getElementById('hero-3d-container');
+      if (!container || !heroRenderer || !heroCamera) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w > 0 && h > 0) {
+        heroCamera.aspect = w / h;
+        heroCamera.updateProjectionMatrix();
+        heroRenderer.setSize(w, h);
+      }
+    }
+
+    // ===========================================================
+    // 5. SECCIÓN 4: LABORATORIO 3D INTERACTIVO (8 MODELOS)
+    // ===========================================================
+    const lab3DModelsData = [
+      {
+        id: 0,
+        name: "1. Lavadora de Cepillos con Aspersores",
+        category: "Acondicionamiento e Inocuidad",
+        materials: "Acero inoxidable AISI 304, cerdas de polietileno grado alimentario, boquillas de aspersión en PVDF.",
+        functionText: "Remueve tierra adherida, esporas fúngicas y residuos de látex mediante fricción suave rotativa combinada con solución desinfectante atomizada.",
+        params: "Velocidad cepillos: 60-90 RPM | Presión boquillas: 1.5 - 2.5 bar | Cloro libre: 100-150 ppm (pH 6.8).",
+        risks: "Cerdas desgastadas o exceso de RPM causan abrasión cuticular y aceleran pérdida de peso."
+      },
+      {
+        id: 1,
+        name: "2. Seleccionadora Rotativa por Calibre",
+        category: "Clasificación NTC",
+        materials: "Tambor perforado en acero inoxidable pulido con bordes redondeados y recubrimiento amortiguador en EPDM.",
+        functionText: "Clasifica productos esféricos (cítricos, tomate, cebolla, papa) por diámetro ecuatorial según categorías Extra, I y II establecidas en normas NTC.",
+        params: "Inclinación tambor: 3° - 5° | Velocidad giro: 12 - 18 RPM | Caída amortiguada < 10 cm.",
+        risks: "Sobrecarga del tambor provoca golpeteo entre frutos y magulladuras por impacto."
+      },
+      {
+        id: 2,
+        name: "3. Túnel de Preenfriamiento por Aire Forzado",
+        category: "Cadena de Frío",
+        materials: "Ventiladores centrífugos de alta presión estática, lona selladora de PVC térmico y estibas con cajas ventiladas.",
+        functionText: "Crea un diferencial de presión (125 a 250 Pa) que obliga al aire frío a circular directamente a través de las perforaciones laterales de las cajas, removiendo el calor de campo 8 veces más rápido.",
+        params: "Flujo de aire: 1 a 2 L/s por kg de producto | Tiempo medio enfriamiento (7/8): 2 - 4 horas.",
+        risks: "Espacios abiertos entre estibas generan cortocircuito del aire frío y enfriamiento desigual."
+      },
+      {
+        id: 3,
+        name: "4. Cámara Frigorífica con Evaporador",
+        category: "Almacenamiento Refrigerado",
+        materials: "Paneles sándwich de poliuretano de alta densidad (100 mm), unidad evaporadora de tiro forzado y estibas plásticas.",
+        functionText: "Mantiene la temperatura óptima de almacenamiento y alta humedad relativa (85-95%) mediante control termostático y desescarche programado.",
+        params: "Diferencial temperatura evaporador (ΔT): 2°C - 4°C | Velocidad aire almacenamiento: 0.2 - 0.5 m/s.",
+        risks: "Un ΔT elevado (>6°C) deshumidifica excesivamente el aire y deshidrata el producto."
+      },
+      {
+        id: 4,
+        name: "5. Canastilla Plástica Cosechera Ventilada",
+        category: "Logística y Flujo de Aire",
+        materials: "Polietileno de alta densidad (HDPE) virgen grado alimentario con aditivo UV y paredes ranuradas.",
+        functionText: "Protege contra compresión durante el apilado y permite ventilación cruzada vertical y horizontal durante el preenfriamiento y transporte.",
+        params: "Capacidad: 18 - 22 kg | Área de ventilación lateral: 18% - 25% | Apilamiento máximo: 6-8 niveles.",
+        risks: "El sobrellenado por encima del borde superior aplasta la capa inferior al estibar."
+      },
+      {
+        id: 5,
+        name: "6. Estructura Celular Vegetal (Turgencia)",
+        category: "Fisiología Poscosecha",
+        materials: "Pared celular de celulosa/pectina, membrana plasmática semipermeable y vacuola central hídrica.",
+        functionText: "Ilustra el estado de turgencia celular cuando la humedad relativa es óptima (90-95%) frente a la plasmólisis y colapso tisular por transpiración excesiva.",
+        params: "Potencial hídrico celular: -0.5 a -1.2 MPa | Pérdida crítica de agua: > 5% peso fresco.",
+        risks: "La degradación enzimática de protopectinas por poligalacturonasa causa ablandamiento irreversible."
+      },
+      {
+        id: 6,
+        name: "7. Empaque con Atmósfera Modificada (MAP)",
+        category: "Tecnología de Empaques",
+        materials: "Película polimérica microperforada (LDPE / Polipropileno orientado) y sachet absorbedor de etileno (KMnO₄).",
+        functionText: "Establece una atmósfera de equilibrio interna (O₂ reducido al 3-5%, CO₂ elevado al 5-8%) gracias al balance entre respiración del fruto y permeabilidad del film.",
+        params: "OTR (Permeabilidad O₂): 3,000 - 8,000 cm³/m²·día | Absorbedor etileno: 5 g por cada 5 kg fruta.",
+        risks: "Elevación brusca de temperatura dispara respiración y provoca anaerobiosis dentro de la bolsa."
+      },
+      {
+        id: 7,
+        name: "8. Refractómetro y Penetrómetro Digital",
+        category: "Control de Calidad",
+        materials: "Prisma óptico de vidrio flint, sensor fotoeléctrico Brix y celda de carga con puntal cilíndrico (8 mm / 11 mm).",
+        functionText: "Determinan cuantitativamente los Sólidos Solubles Totales (°Brix) y la resistencia mecánica de la pulpa (kgf o Newtons) para decidir momento de cosecha y vida útil.",
+        params: "Resolución Brix: ±0.1° | Puntal 8 mm (pera, durazno, aguacate) / Puntal 11 mm (manzana, mango).",
+        risks: "Medir °Brix sin compensación automática de temperatura (ATC) altera la lectura real."
+      }
+    ];
+
+    let labScene, labCamera, labRenderer, labControls, labCurrentGroup;
+    let labAnimOn = true;
+    let labExplodeOn = false;
+    let labWireframeOn = false;
+    let labSpeed = 1.0;
+    let labRaycaster = new THREE.Raycaster();
+    let labMouse = new THREE.Vector2();
+    let labInteractiveMeshes = [];
+
+    function initLab3D() {
+      const container = document.getElementById('lab3d-canvas-container');
+      if (!container || typeof THREE === 'undefined') return;
+
+      labScene = new THREE.Scene();
+      labScene.background = new THREE.Color(0x030b08);
+
+      const w = container.clientWidth || 600;
+      const h = container.clientHeight || 420;
+      labCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+      labCamera.position.set(5.5, 4.5, 6.5);
+
+      labRenderer = new THREE.WebGLRenderer({ antialias: true });
+      labRenderer.setSize(w, h);
+      labRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(labRenderer.domElement);
+
+      labControls = new THREE.OrbitControls(labCamera, labRenderer.domElement);
+      labControls.enableDamping = true;
+
+      // Lights
+      labScene.add(new THREE.AmbientLight(0x608075, 1.4));
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
+      keyLight.position.set(8, 12, 8);
+      labScene.add(keyLight);
+      const rimLight = new THREE.PointLight(0x00ff88, 1.4, 25);
+      rimLight.position.set(-6, 5, -5);
+      labScene.add(rimLight);
+
+      const grid = new THREE.GridHelper(16, 16, 0x00e5ff, 0x0f2922);
+      grid.position.y = -1.6;
+      labScene.add(grid);
+
+      // Raycasting on click
+      labRenderer.domElement.addEventListener('pointerdown', onLabCanvasClick);
+
+      renderLabModelList();
+      loadLab3DModel(0);
+    }
+
+    function renderLabModelList() {
+      const list = document.getElementById('lab3d-model-list');
+      list.innerHTML = lab3DModelsData.map((m, idx) => `
+        <button onclick="loadLab3DModel(${idx})" id="lab-mod-btn-${idx}" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center justify-between ${idx === 0 ? 'bg-agro-emerald/20 border border-agro-emerald text-agro-emerald font-bold' : 'bg-slate-900/90 border border-slate-800 text-slate-300 hover:border-agro-cyan'}">
+          <span class="truncate">${m.name}</span>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      `).join('');
+    }
+
+    function registerLabPart(mesh, partName, explodeOffset) {
+      mesh.userData.partName = partName;
+      mesh.userData.origPos = mesh.position.clone();
+      mesh.userData.explodeOffset = explodeOffset || new THREE.Vector3(0, 0, 0);
+      labInteractiveMeshes.push(mesh);
+      labCurrentGroup.add(mesh);
+    }
+
+    function loadLab3DModel(idx) {
+      appState.currentLabModelId = idx;
+      addScore(5, 'lab3d-' + idx);
+
+      lab3DModelsData.forEach((_, i) => {
+        const btn = document.getElementById('lab-mod-btn-' + i);
+        if (btn) {
+          btn.className = i === idx
+            ? 'w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center justify-between bg-agro-emerald/20 border border-agro-emerald text-agro-emerald font-bold'
+            : 'w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center justify-between bg-slate-900/90 border border-slate-800 text-slate-300 hover:border-agro-cyan';
+        }
+      });
+
+      const data = lab3DModelsData[idx];
+      document.getElementById('lab3d-current-title').textContent = data.name;
+      document.getElementById('lab3d-picked-part').textContent = 'Clic sobre una pieza 3D para inspeccionar';
+
+      document.getElementById('lab3d-datasheet').innerHTML = `
+        <div class="border-b border-slate-800 pb-2">
+          <span class="text-[10px] font-mono text-agro-cyan uppercase">${data.category}</span>
+          <h3 class="font-orbitron text-sm font-bold text-white mt-0.5">${data.name}</h3>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+            <div class="font-mono text-agro-emerald font-bold mb-1"><i class="fa-solid fa-layer-group mr-1"></i> MATERIALES / COMPOSICIÓN</div>
+            <p class="text-slate-300">${data.materials}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+            <div class="font-mono text-agro-cyan font-bold mb-1"><i class="fa-solid fa-gears mr-1"></i> FUNCIÓN OPERATIVA / FISIOLÓGICA</div>
+            <p class="text-slate-300">${data.functionText}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-agro-emerald/30">
+            <div class="font-mono text-agro-emerald font-bold mb-1"><i class="fa-solid fa-sliders mr-1"></i> PARÁMETROS CRÍTICOS DE CONTROL</div>
+            <p class="text-slate-200 font-mono text-[11px]">${data.params}</p>
+          </div>
+          <div class="p-3 rounded-xl bg-rose-950/30 border border-rose-500/40">
+            <div class="font-mono text-rose-400 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> RIESGO DE DETERIORO</div>
+            <p class="text-slate-300">${data.risks}</p>
+          </div>
+        </div>
+      `;
+
+      // Clear previous 3D group
+      if (labCurrentGroup) {
+        labScene.remove(labCurrentGroup);
+      }
+      labCurrentGroup = new THREE.Group();
+      labInteractiveMeshes = [];
+
+      const steelMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.25 });
+      const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.4 });
+      const greenMat = new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.4 });
+      const cyanGlassMat = new THREE.MeshPhysicalMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.35, roughness: 0.1 });
+      const orangeMat = new THREE.MeshStandardMaterial({ color: 0xff8800, roughness: 0.35 });
+
+      if (idx === 0) {
+        // 1. Lavadora de Cepillos con Aspersores
+        const chassis = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.8, 2.2), steelMat);
+        chassis.position.y = -0.5;
+        registerLabPart(chassis, "Batea Colectora en Acero Inoxidable 304", new THREE.Vector3(0, -0.8, 0));
+
+        for (let i = -1.6; i <= 1.6; i += 0.8) {
+          const brush = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 2.0, 20), greenMat);
+          brush.rotation.x = Math.PI / 2;
+          brush.position.set(i, 0.1, 0);
+          brush.userData.spinZ = true;
+          registerLabPart(brush, "Rodillo de Cerdas Suaves HDPE", new THREE.Vector3(0, 0.3, 0));
+        }
+
+        const hood = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.3, 2.1), cyanGlassMat);
+        hood.position.set(0, 1.0, 0);
+        registerLabPart(hood, "Cubierta Transparente Antis salpicaduras", new THREE.Vector3(0, 1.4, 0));
+
+        const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.0, 12), orangeMat);
+        pipe.rotation.z = Math.PI / 2;
+        pipe.position.set(0, 1.35, 0);
+        registerLabPart(pipe, "Flauta de Aspersión (120 ppm NaClO)", new THREE.Vector3(0, 1.9, 0));
+
+      } else if (idx === 1) {
+        // 2. Seleccionadora Rotativa por Calibre
+        const base = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.3, 2.0), darkMat);
+        base.position.y = -1.1;
+        registerLabPart(base, "Bastidor Estructural con Amortiguadores", new THREE.Vector3(0, -0.7, 0));
+
+        const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 4.2, 24, 1, true), steelMat);
+        drum.rotation.z = Math.PI / 2 - 0.08;
+        drum.position.set(0, 0.3, 0);
+        drum.userData.spinDrum = true;
+        registerLabPart(drum, "Tambor Calibrador Perforado NTC", new THREE.Vector3(0, 0.9, 0));
+
+        for (let c = -1.3; c <= 1.3; c += 1.3) {
+          const chute = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.12, 2.2), orangeMat);
+          chute.position.set(c, -0.65, 0.2);
+          chute.rotation.x = 0.25;
+          registerLabPart(chute, `Bandeja de Salida Calibre (${c < 0 ? 'Pequeño' : c === 0 ? 'Mediano' : 'Extra'})`, new THREE.Vector3(0, -0.2, 0.8));
+        }
+
+      } else if (idx === 2) {
+        // 3. Túnel de Preenfriamiento por Aire Forzado
+        const fanWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.6, 2.8), darkMat);
+        fanWall.position.set(-2.3, 0.1, 0);
+        registerLabPart(fanWall, "Muro de Succión y Ventilador Centrífugo", new THREE.Vector3(-1.2, 0, 0));
+
+        const turbine = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.2, 16), orangeMat);
+        turbine.rotation.z = Math.PI / 2;
+        turbine.position.set(-2.0, 0.2, 0);
+        turbine.userData.spinFan = true;
+        registerLabPart(turbine, "Rotor Extractor de Alta Presión Estática", new THREE.Vector3(-0.8, 0.4, 0));
+
+        for (let row of [-0.85, 0.85]) {
+          for (let col of [-0.6, 0.7]) {
+            const box = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.85, 0.75), greenMat);
+            box.position.set(0.2, col, row);
+            registerLabPart(box, "Estiba de Cajas Ventiladas Alineadas", new THREE.Vector3(0.4, col * 0.4, row * 0.6));
+          }
+        }
+
+        const tarp = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.08, 2.6), cyanGlassMat);
+        tarp.position.set(-0.2, 1.35, 0);
+        registerLabPart(tarp, "Lona Selladora Superior de Presión Negativa", new THREE.Vector3(0, 1.3, 0));
+
+      } else if (idx === 3) {
+        // 4. Cámara Frigorífica con Evaporador
+        const room = new THREE.Mesh(new THREE.BoxGeometry(4.4, 3.0, 3.6), cyanGlassMat);
+        room.position.y = 0.1;
+        registerLabPart(room, "Aislamiento Térmico Poliuretano 100mm", new THREE.Vector3(0, 1.0, 0));
+
+        const evap = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.55, 0.7), steelMat);
+        evap.position.set(0, 1.15, -1.2);
+        registerLabPart(evap, "Unidad Evaporadora de Tiro Forzado", new THREE.Vector3(0, 0.6, -0.8));
+
+        const pallet = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.2, 1.8), orangeMat);
+        pallet.position.set(0, -1.2, 0.2);
+        registerLabPart(pallet, "Estiba Plástica Sanitaria (Separación Piso)", new THREE.Vector3(0, -0.5, 0));
+
+        const load = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.4, 1.6), greenMat);
+        load.position.set(0, -0.35, 0.2);
+        registerLabPart(load, "Carga Paletizada a 8°C y 92% HR", new THREE.Vector3(0, 0.3, 0));
+
+      } else if (idx === 4) {
+        // 5. Canastilla Plástica Cosechera Ventilada
+        const bottom = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.15, 2.0), greenMat);
+        bottom.position.y = -0.7;
+        registerLabPart(bottom, "Base Ranurada Antideslizante HDPE", new THREE.Vector3(0, -0.7, 0));
+
+        const wallF = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1.2, 0.12), greenMat);
+        wallF.position.set(0, -0.05, 0.94);
+        registerLabPart(wallF, "Pared Frontal con Ventilación (22% Área Abierta)", new THREE.Vector3(0, 0, 0.9));
+
+        const wallB = wallF.clone();
+        wallB.position.z = -0.94;
+        registerLabPart(wallB, "Pared Posterior Ventilada", new THREE.Vector3(0, 0, -0.9));
+
+        const wallL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.2, 2.0), orangeMat);
+        wallL.position.set(-1.44, -0.05, 0);
+        registerLabPart(wallL, "Columna Esquinera Reforzada de Apilado", new THREE.Vector3(-0.9, 0, 0));
+
+        const wallR = wallL.clone();
+        wallR.position.x = 1.44;
+        registerLabPart(wallR, "Agarradera Ergonómica Reforzada", new THREE.Vector3(0.9, 0, 0));
+
+      } else if (idx === 5) {
+        // 6. Estructura Celular Vegetal
+        const cellWall = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.6, 2.6), greenMat);
+        cellWall.material = cellWall.material.clone();
+        cellWall.material.wireframe = true;
+        registerLabPart(cellWall, "Pared Celular Primaria (Celulosa y Pectinas)", new THREE.Vector3(0, 0.8, 0));
+
+        const membrane = new THREE.Mesh(new THREE.SphereGeometry(1.15, 24, 24), orangeMat);
+        membrane.material = membrane.material.clone();
+        membrane.material.transparent = true;
+        membrane.material.opacity = 0.45;
+        registerLabPart(membrane, "Membrana Plasmática Semipermeable", new THREE.Vector3(0, 0, 0.9));
+
+        const vacuole = new THREE.Mesh(new THREE.SphereGeometry(0.85, 24, 24), cyanGlassMat);
+        vacuole.userData.pulseVacuole = true;
+        registerLabPart(vacuole, "Vacuola Central Hídrica (Presión de Turgencia)", new THREE.Vector3(0, 0, -0.6));
+
+      } else if (idx === 6) {
+        // 7. Empaque con Atmósfera Modificada (MAP)
+        const tray = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.5, 2.0), darkMat);
+        tray.position.y = -0.4;
+        registerLabPart(tray, "Bandeja Rígida Grado Alimentario", new THREE.Vector3(0, -0.7, 0));
+
+        for (let fx of [-0.6, 0.6]) {
+          for (let fz of [-0.4, 0.4]) {
+            const f = new THREE.Mesh(new THREE.SphereGeometry(0.35, 18, 18), orangeMat);
+            f.position.set(fx, -0.05, fz);
+            registerLabPart(f, "Producto Respirando (Consumo O₂ / Emisión CO₂)", new THREE.Vector3(fx * 0.5, 0.2, fz * 0.5));
+          }
+        }
+
+        const sachet = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 0.4), greenMat);
+        sachet.position.set(0, 0.28, 0);
+        registerLabPart(sachet, "Sachet Absorbedor de Etileno (KMnO₄)", new THREE.Vector3(0, 0.9, 0));
+
+        const film = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.9, 2.1), cyanGlassMat);
+        film.position.y = 0.15;
+        registerLabPart(film, "Película Polimérica Selectiva Microperforada", new THREE.Vector3(0, 1.5, 0));
+
+      } else if (idx === 7) {
+        // 8. Refractómetro y Penetrómetro Digital
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.4, 0.55), darkMat);
+        body.position.set(-0.9, 0, 0);
+        registerLabPart(body, "Cuerpo Ergonómico con Pantalla LCD Digital", new THREE.Vector3(-0.7, 0, 0));
+
+        const prism = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.15, 20), cyanGlassMat);
+        prism.rotation.x = Math.PI / 2;
+        prism.position.set(-0.9, 0.75, 0.32);
+        registerLabPart(prism, "Prisma Óptico de Medición °Brix (ATC)", new THREE.Vector3(-0.7, 0.6, 0.7));
+
+        const penetroBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 2.0, 20), steelMat);
+        penetroBody.position.set(1.1, 0.2, 0);
+        registerLabPart(penetroBody, "Penetrómetro Digital (Celda de Carga kgf/N)", new THREE.Vector3(0.7, 0.3, 0));
+
+        const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.7, 16), orangeMat);
+        tip.position.set(1.1, -1.0, 0);
+        registerLabPart(tip, "Puntal Cilíndrico Normalizado (8 mm / 11 mm)", new THREE.Vector3(0.7, -0.8, 0));
+      }
+
+      labScene.add(labCurrentGroup);
+      applyLabVisualModes();
+    }
+
+    function onLabCanvasClick(event) {
+      const rect = labRenderer.domElement.getBoundingClientRect();
+      labMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      labMouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      labRaycaster.setFromCamera(labMouse, labCamera);
+      const intersects = labRaycaster.intersectObjects(labInteractiveMeshes);
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        document.getElementById('lab3d-picked-part').innerHTML = `<i class="fa-solid fa-crosshairs mr-1"></i> Pieza: <strong>${hit.userData.partName}</strong>`;
+      }
+    }
+
+    function toggleLabAnim() {
+      labAnimOn = !labAnimOn;
+      document.getElementById('btn-lab-anim').innerHTML = `<i class="fa-solid fa-${labAnimOn ? 'play' : 'pause'} mr-1"></i> Animación: ${labAnimOn ? 'ON' : 'OFF'}`;
+    }
+
+    function toggleLabExplode() {
+      labExplodeOn = !labExplodeOn;
+      document.getElementById('btn-lab-explode').innerHTML = `<i class="fa-solid fa-up-right-and-down-left-from-center mr-1 text-agro-amber"></i> Despiece: ${labExplodeOn ? 'ON' : 'OFF'}`;
+      applyLabVisualModes();
+    }
+
+    function toggleLabWireframe() {
+      labWireframeOn = !labWireframeOn;
+      document.getElementById('btn-lab-wire').innerHTML = `<i class="fa-solid fa-border-all mr-1 text-agro-cyan"></i> Rayos X: ${labWireframeOn ? 'ON' : 'OFF'}`;
+      applyLabVisualModes();
+    }
+
+    function applyLabVisualModes() {
+      labInteractiveMeshes.forEach(mesh => {
+        if (labExplodeOn) {
+          mesh.position.copy(mesh.userData.origPos).add(mesh.userData.explodeOffset);
+        } else {
+          mesh.position.copy(mesh.userData.origPos);
+        }
+        if (mesh.material) {
+          mesh.material.wireframe = labWireframeOn;
+        }
+      });
+    }
+
+    function resetLabCamera() {
+      if (labCamera && labControls) {
+        labCamera.position.set(5.5, 4.5, 6.5);
+        labControls.target.set(0, 0, 0);
+        labControls.update();
+      }
+    }
+
+    function updateLabSpeed(val) {
+      labSpeed = parseFloat(val);
+      document.getElementById('lab3d-speed-val').textContent = labSpeed.toFixed(1) + 'x';
+    }
+
+    function resizeLab3D() {
+      const container = document.getElementById('lab3d-canvas-container');
+      if (!container || !labRenderer || !labCamera) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w > 0 && h > 0) {
+        labCamera.aspect = w / h;
+        labCamera.updateProjectionMatrix();
+        labRenderer.setSize(w, h);
+      }
+    }
+
+    // Master 3D Animation Loop
+    let clock3D = new THREE.Clock();
+    function animate3DLoop() {
+      requestAnimationFrame(animate3DLoop);
+      const dt = clock3D.getDelta();
+      const elapsed = clock3D.getElapsedTime();
+
+      // Hero 3D updates
+      if (heroRenderer && heroScene && heroCamera && document.getElementById('sec-inicio').classList.contains('active')) {
+        heroControls.update();
+        heroFruits.forEach(f => {
+          f.position.x += dt * 1.1;
+          if (f.position.x > 4.8) f.position.x = -4.8;
+        });
+        if (heroLineGroup) {
+          heroLineGroup.children.forEach(child => {
+            if (child.userData.isBrush) child.rotation.z -= dt * 6;
+          });
+        }
+        heroRenderer.render(heroScene, heroCamera);
+      }
+
+      // Lab 3D updates
+      if (labRenderer && labScene && labCamera && document.getElementById('sec-lab3d').classList.contains('active')) {
+        labControls.update();
+        if (labAnimOn && labCurrentGroup) {
+          labInteractiveMeshes.forEach(m => {
+            if (m.userData.spinZ) m.rotation.z -= dt * 4 * labSpeed;
+            if (m.userData.spinDrum) m.rotation.x += dt * 1.5 * labSpeed;
+            if (m.userData.spinFan) m.rotation.x += dt * 8 * labSpeed;
+            if (m.userData.pulseVacuole) {
+              const s = 1 + Math.sin(elapsed * 2.5 * labSpeed) * 0.06;
+              m.scale.set(s, s, s);
+            }
+          });
+        }
+        labRenderer.render(labScene, labCamera);
+      }
+    }
+
+    // ===========================================================
+    // 6. SECCIÓN 5: 8 SIMULADORES BIOFÍSICOS EN CANVAS 2D
+    // ===========================================================
+    const simulatorsConfig = [
+      {
+        id: 0,
+        short: "1. Respiración y Climaterio",
+        title: "Banco 1: Curva Respiratoria y Climaterio (Fruto Climatérico vs. No Climatérico)",
+        desc: "Simula el efecto de la temperatura de almacenamiento (°C) sobre la tasa respiratoria (mg CO₂/kg·h) según la ley Q₁₀. Al aumentar la temperatura, el pico climatérico se adelanta y reduce drásticamente los días de vida útil.",
+        controls: [
+          { id: "temp", label: "Temperatura Almacenamiento (°C)", min: 5, max: 32, step: 1, val: 14, unit: "°C" },
+          { id: "type", label: "Tipo Fisiológico (0=No Clim, 1=Clim)", min: 0, max: 1, step: 1, val: 1, unit: "" }
+        ]
+      },
+      {
+        id: 1,
+        short: "2. Deshidratación y DPV",
+        title: "Banco 2: Transpiración y Déficit de Presión de Vapor (DPV)",
+        desc: "Calcula el Déficit de Presión de Vapor (kPa) a partir de temperatura y Humedad Relativa (%). Valores altos de DPV aceleran la pérdida de agua y causan marchitez comercial (>5% pérdida de peso).",
+        controls: [
+          { id: "temp", label: "Temperatura Ambiente (°C)", min: 2, max: 30, step: 1, val: 12, unit: "°C" },
+          { id: "hr", label: "Humedad Relativa (%)", min: 50, max: 98, step: 1, val: 88, unit: "%" }
+        ]
+      },
+      {
+        id: 2,
+        short: "3. Preenfriamiento 7/8",
+        title: "Banco 3: Curva de Preenfriamiento por Aire Forzado (Tiempo 7/8)",
+        desc: "Modela el descenso exponencial de temperatura de pulpa desde el calor de campo hasta la temperatura del cuarto frío según el caudal de aire forzado.",
+        controls: [
+          { id: "tcampo", label: "Temperatura Inicial Campo (°C)", min: 20, max: 36, step: 1, val: 30, unit: "°C" },
+          { id: "airflow", label: "Caudal Aire Forzado (L/s·kg)", min: 0.2, max: 2.5, step: 0.1, val: 1.5, unit: "L/s·kg" }
+        ]
+      },
+      {
+        id: 3,
+        short: "4. Desinfección Tanque",
+        title: "Banco 4: Eficiencia de Desinfección con Hipoclorito de Sodio",
+        desc: "Simula la fracción activa de Ácido Hipocloroso (HOCl) en función del pH del agua y la dosis de cloro libre (ppm). A pH > 8.0 predomina el ion hipoclorito (OCl⁻), 80 veces menos efectivo.",
+        controls: [
+          { id: "ppm", label: "Cloro Libre (ppm)", min: 20, max: 200, step: 5, val: 120, unit: "ppm" },
+          { id: "ph", label: "pH del Agua de Lavado", min: 5.5, max: 9.0, step: 0.1, val: 6.8, unit: "pH" }
+        ]
+      },
+      {
+        id: 4,
+        short: "5. Etileno Mixto",
+        title: "Banco 5: Exposición a Etileno Exógeno en Almacenamiento Mixto",
+        desc: "Evalúa la pérdida de firmeza y clorofila de hortalizas/frutas sensibles almacenadas junto a emisores altos de etileno (banano, manzana, maracuyá).",
+        controls: [
+          { id: "eth", label: "Concentración Etileno (ppm)", min: 0, max: 50, step: 1, val: 12, unit: "ppm" },
+          { id: "days", label: "Días de Exposición Mixta", min: 1, max: 14, step: 1, val: 5, unit: "días" }
+        ]
+      },
+      {
+        id: 5,
+        short: "6. Atmósfera MAP",
+        title: "Banco 6: Dinámica de Atmósfera Modificada Pasiva (MAP)",
+        desc: "Simula el equilibrio de gases (O₂ y CO₂) dentro de un empaque polimérico según la tasa respiratoria y la permeabilidad de la película. Evita caer en zona anaeróbica (<1.5% O₂).",
+        controls: [
+          { id: "perm", label: "Permeabilidad Film (Factor)", min: 1, max: 10, step: 1, val: 5, unit: "x" },
+          { id: "temp", label: "Temperatura Cadena Frío (°C)", min: 4, max: 25, step: 1, val: 8, unit: "°C" }
+        ]
+      },
+      {
+        id: 6,
+        short: "7. Daño por Frío",
+        title: "Banco 7: Índice de Daño por Frío (Chilling Injury) en Frutos Tropicales",
+        desc: "Calcula el daño celular acumulado en frutos tropicales (temperatura crítica 12°C) cuando se almacenan por debajo de su umbral fisiológico seguro.",
+        controls: [
+          { id: "temp", label: "Temperatura Cámara (°C)", min: 2, max: 16, step: 1, val: 6, unit: "°C" },
+          { id: "days", label: "Días en Cámara", min: 1, max: 15, step: 1, val: 7, unit: "días" }
+        ]
+      },
+      {
+        id: 7,
+        short: "8. Daños Mecánicos",
+        title: "Banco 8: Impacto de Altura de Caída y Sobrecarga en Pudriciones",
+        desc: "Relaciona la altura de caída durante la cosecha/vaciado y la altura de llenado de canastillas con la incidencia de magulladuras y pudriciones fúngicas a los 7 días.",
+        controls: [
+          { id: "drop", label: "Altura de Caída en Vaciado (cm)", min: 5, max: 60, step: 5, val: 25, unit: "cm" },
+          { id: "load", label: "Llenado de Canastilla (%)", min: 70, max: 120, step: 5, val: 95, unit: "%" }
+        ]
+      }
+    ];
+
+    let simValues = {};
+    let simAnimPhase = 0;
+
+    function initSimulators() {
+      const grid = document.getElementById('sim-selector-grid');
+      grid.innerHTML = simulatorsConfig.map((s, idx) => `
+        <button onclick="selectSimulator(${idx})" id="sim-btn-${idx}" class="px-3 py-2 rounded-xl text-xs font-orbitron font-bold text-left transition truncate ${idx === 0 ? 'bg-agro-cyan/20 border border-agro-cyan text-agro-cyan' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:border-agro-emerald'}">
+          ${s.short}
+        </button>
+      `).join('');
+      selectSimulator(0);
+      requestAnimationFrame(animateSim2D);
+    }
+
+    function selectSimulator(idx) {
+      appState.currentSimId = idx;
+      addScore(5, 'sim-' + idx);
+
+      simulatorsConfig.forEach((_, i) => {
+        const b = document.getElementById('sim-btn-' + i);
+        if (b) {
+          b.className = i === idx
+            ? 'px-3 py-2 rounded-xl text-xs font-orbitron font-bold text-left transition truncate bg-agro-cyan/20 border border-agro-cyan text-agro-cyan'
+            : 'px-3 py-2 rounded-xl text-xs font-orbitron font-bold text-left transition truncate bg-slate-900 border border-slate-800 text-slate-300 hover:border-agro-emerald';
+        }
+      });
+
+      const cfg = simulatorsConfig[idx];
+      document.getElementById('sim-canvas-title').textContent = cfg.title;
+      document.getElementById('sim-explanation').textContent = cfg.desc;
+
+      simValues = {};
+      cfg.controls.forEach(c => { simValues[c.id] = c.val; });
+
+      document.getElementById('sim-controls-panel').innerHTML = `
+        <div class="font-orbitron text-xs font-bold text-agro-cyan border-b border-slate-800 pb-2">
+          <i class="fa-solid fa-sliders mr-1"></i> PARÁMETROS DE CONTROL EN VIVO
+        </div>
+        ${cfg.controls.map(c => `
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-300">${c.label}</span>
+              <span id="sim-lbl-${c.id}" class="font-mono font-bold text-agro-emerald">${c.val} ${c.unit}</span>
+            </div>
+            <input type="range" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.val}"
+              oninput="updateSimControl('${c.id}', this.value, '${c.unit}')">
+          </div>
+        `).join('')}
+      `;
+
+      updateSimTelemetry();
+    }
+
+    function updateSimControl(id, val, unit) {
+      simValues[id] = parseFloat(val);
+      const lbl = document.getElementById('sim-lbl-' + id);
+      if (lbl) lbl.textContent = val + ' ' + unit;
+      updateSimTelemetry();
+    }
+
+    function updateSimTelemetry() {
+      const id = appState.currentSimId;
+      let resp = 22, weightLoss = 2.1, firmness = 8.4, shelfLife = 16, alertMsg = "OPERACIÓN ÓPTIMA", alertColor = "emerald";
+
+      if (id === 0) {
+        const T = simValues.temp;
+        const isClim = simValues.type === 1;
+        resp = Math.round((isClim ? 28 : 14) * Math.pow(2.2, (T - 10) / 10));
+        weightLoss = +(0.15 * resp / 10).toFixed(1);
+        firmness = Math.max(1.5, +(10 - (T * 0.22)).toFixed(1));
+        shelfLife = Math.max(2, Math.round(320 / resp));
+        if (T > 20) { alertMsg = "ALERTA: SENESCENCIA ACELERADA"; alertColor = "danger"; }
+        else if (T > 14) { alertMsg = "PRECAUCIÓN: MADURACIÓN RÁPIDA"; alertColor = "amber"; }
+      } else if (id === 1) {
+        const T = simValues.temp, HR = simValues.hr;
+        const psat = 0.6108 * Math.exp((17.27 * T) / (T + 237.3));
+        const dpv = +(psat * (1 - HR / 100)).toFixed(2);
+        resp = Math.round(18 * Math.pow(2, (T - 10) / 10));
+        weightLoss = +(dpv * 4.8).toFixed(1);
+        firmness = Math.max(2.0, +(9.5 - weightLoss * 0.55).toFixed(1));
+        shelfLife = Math.max(2, Math.round(22 / (1 + dpv * 1.8)));
+        if (weightLoss > 5.0) { alertMsg = "CRÍTICO: MARCHITEZ COMERCIAL (>5%)"; alertColor = "danger"; }
+        else if (dpv > 0.4) { alertMsg = "PRECAUCIÓN: DPV ELEVADO (" + dpv + " kPa)"; alertColor = "amber"; }
+      } else if (id === 2) {
+        const Ti = simValues.tcampo, af = simValues.airflow;
+        const t78 = +(3.6 / af).toFixed(1);
+        resp = Math.round(16 + (Ti - 8) * 1.4);
+        weightLoss = +(0.8 + t78 * 0.25).toFixed(1);
+        firmness = 9.0;
+        shelfLife = Math.max(5, Math.round(24 - t78 * 1.3));
+        if (t78 > 5) { alertMsg = "ENFRIAMIENTO LENTO (RIESGO CALOR CAMPO)"; alertColor = "amber"; }
+      } else if (id === 3) {
+        const ppm = simValues.ppm, ph = simValues.ph;
+        const hoclPct = Math.round(100 / (1 + Math.pow(10, ph - 7.5)));
+        const eff = Math.min(99.9, +((ppm * (hoclPct / 100)) * 1.25).toFixed(1));
+        resp = 18;
+        weightLoss = 1.5;
+        firmness = 8.8;
+        shelfLife = eff > 90 ? 18 : 7;
+        if (ph > 7.6 || ppm < 80) { alertMsg = "DESINFECCIÓN INSUFICIENTE (HOCl: " + hoclPct + "%)"; alertColor = "danger"; }
+      } else if (id === 4) {
+        const eth = simValues.eth, days = simValues.days;
+        resp = Math.round(20 + eth * 1.6);
+        weightLoss = +(1.2 + days * 0.35).toFixed(1);
+        firmness = Math.max(1.2, +(9.5 - (eth * days * 0.035)).toFixed(1));
+        shelfLife = Math.max(1, Math.round(16 - eth * 0.25));
+        if (eth > 5) { alertMsg = "INCOMPATIBILIDAD POR ETILENO"; alertColor = "danger"; }
+      } else if (id === 5) {
+        const perm = simValues.perm, T = simValues.temp;
+        const o2 = Math.max(0.5, +(21 - (T * 1.6) / (perm * 0.35)).toFixed(1));
+        resp = Math.round(12 + T * 1.1);
+        weightLoss = 0.9;
+        firmness = 8.9;
+        shelfLife = o2 < 1.5 ? 2 : Math.round(22 - T * 0.4);
+        if (o2 < 1.5) { alertMsg = "PELIGRO: ANAEROBIOSIS (O₂=" + o2 + "%)"; alertColor = "danger"; }
+        else if (o2 > 12) { alertMsg = "ATMOSFERA POCO MODIFICADA (O₂=" + o2 + "%)"; alertColor = "amber"; }
+      } else if (id === 6) {
+        const T = simValues.temp, days = simValues.days;
+        const deficit = Math.max(0, 12 - T);
+        const ciScore = deficit * days;
+        resp = Math.round(18 + ciScore * 0.8);
+        weightLoss = +(1.5 + ciScore * 0.06).toFixed(1);
+        firmness = Math.max(2.0, +(9.0 - ciScore * 0.08).toFixed(1));
+        shelfLife = ciScore > 30 ? 3 : 15;
+        if (ciScore > 25) { alertMsg = "DAÑO POR FRÍO SEVERO DETECTADO"; alertColor = "danger"; }
+        else if (deficit > 0) { alertMsg = "ZONA DE RIESGO CHILLING INJURY"; alertColor = "amber"; }
+      } else if (id === 7) {
+        const drop = simValues.drop, load = simValues.load;
+        const bruise = Math.min(85, Math.round((drop * 0.7) + Math.max(0, load - 85) * 1.5));
+        resp = Math.round(22 + bruise * 0.6);
+        weightLoss = +(1.8 + bruise * 0.08).toFixed(1);
+        firmness = Math.max(2.0, +(9.0 - bruise * 0.07).toFixed(1));
+        shelfLife = Math.max(2, Math.round(16 - bruise * 0.16));
+        if (bruise > 25) { alertMsg = "ALTA INCIDENCIA DE PUDRICIÓN (" + bruise + "%)"; alertColor = "danger"; }
+        else if (bruise > 12) { alertMsg = "DAÑO MECÁNICO MODERADO (" + bruise + "%)"; alertColor = "amber"; }
+      }
+
+      const badge = document.getElementById('sim-status-badge');
+      badge.textContent = alertMsg;
+      badge.className = alertColor === 'danger'
+        ? 'text-xs font-mono px-2.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/50'
+        : alertColor === 'amber'
+          ? 'text-xs font-mono px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/50'
+          : 'text-xs font-mono px-2.5 py-0.5 rounded bg-agro-emerald/20 text-agro-emerald border border-agro-emerald/40';
+
+      document.getElementById('sim-telemetry-panel').innerHTML = `
+        <div class="font-orbitron text-xs font-bold text-agro-emerald border-b border-slate-800 pb-1.5">
+          <i class="fa-solid fa-satellite-dish mr-1"></i> TELEMETRÍA FISIOLÓGICA EN VIVO
+        </div>
+        <div class="grid grid-cols-2 gap-2.5 text-xs font-mono">
+          <div class="p-2 rounded bg-slate-950/80 border border-slate-800">
+            <div class="text-[10px] text-slate-400">TASA RESPIRATORIA</div>
+            <div class="text-sm font-bold text-agro-cyan">${resp} <span class="text-[10px]">mg CO₂/kg·h</span></div>
+          </div>
+          <div class="p-2 rounded bg-slate-950/80 border border-slate-800">
+            <div class="text-[10px] text-slate-400">PÉRDIDA DE PESO</div>
+            <div class="text-sm font-bold ${weightLoss > 5 ? 'text-rose-400' : 'text-agro-amber'}">${weightLoss}%</div>
+          </div>
+          <div class="p-2 rounded bg-slate-950/80 border border-slate-800">
+            <div class="text-[10px] text-slate-400">FIRMEZA PULPA</div>
+            <div class="text-sm font-bold text-white">${firmness} <span class="text-[10px]">kgf</span></div>
+          </div>
+          <div class="p-2 rounded bg-slate-950/80 border border-slate-800">
+            <div class="text-[10px] text-slate-400">VIDA ÚTIL REMANENTE</div>
+            <div class="text-sm font-bold ${shelfLife < 6 ? 'text-rose-400' : 'text-agro-emerald'}">${shelfLife} <span class="text-[10px]">días</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function resizeSim2D() {
+      const canvas = document.getElementById('sim-canvas-2d');
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      canvas.width = parent.clientWidth || 600;
+      canvas.height = parent.clientHeight || 360;
+    }
+
+    function animateSim2D() {
+      requestAnimationFrame(animateSim2D);
+      if (!document.getElementById('sec-simuladores').classList.contains('active')) return;
+
+      const canvas = document.getElementById('sim-canvas-2d');
+      if (!canvas) return;
+      if (canvas.width === 0) resizeSim2D();
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      simAnimPhase += 0.04;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Draw Technical Grid
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+      ctx.lineWidth = 1;
+      for (let x = 40; x < W; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, H - 35); ctx.stroke();
+      }
+      for (let y = 20; y < H - 35; y += 40) {
+        ctx.beginPath(); ctx.moveTo(45, y); ctx.lineTo(W - 20, y); ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(50, 25);
+      ctx.lineTo(50, H - 40);
+      ctx.lineTo(W - 25, H - 40);
+      ctx.stroke();
+
+      const id = appState.currentSimId;
+      ctx.font = '11px JetBrains Mono';
+      ctx.fillStyle = '#94a3b8';
+
+      if (id === 0) {
+        // Climacteric vs Non-climacteric curve
+        const T = simValues.temp || 14;
+        const isClim = simValues.type === 1;
+        ctx.fillText('Tasa Respiratoria (mg CO₂/kg·h)', 58, 22);
+        ctx.fillText('Tiempo Poscosecha (Días 1 → 20)', W - 230, H - 15);
+
+        ctx.strokeStyle = isClim ? '#00ff88' : '#00e5ff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        const peakPos = Math.max(0.18, 0.78 - (T - 5) * 0.022);
+        for (let i = 0; i <= 100; i++) {
+          const t = i / 100;
+          const x = 50 + t * (W - 90);
+          let yVal = 0.25 + (T / 45) * 0.3;
+          if (isClim) {
+            yVal += 0.55 * Math.exp(-Math.pow((t - peakPos) / 0.12, 2));
+          } else {
+            yVal = (0.35 + T * 0.012) * Math.exp(-t * 0.7);
+          }
+          const y = (H - 45) - Math.min(0.92, yVal) * (H - 80);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Animated pulse point
+        const pt = (simAnimPhase * 0.15) % 1;
+        const px = 50 + pt * (W - 90);
+        let pyVal = 0.25 + (T / 45) * 0.3 + (isClim ? 0.55 * Math.exp(-Math.pow((pt - peakPos) / 0.12, 2)) : 0);
+        const py = (H - 45) - Math.min(0.92, pyVal) * (H - 80);
+        ctx.fillStyle = '#ff9e00';
+        ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill();
+
+      } else if (id === 1) {
+        // Transpiration particles escaping fruit
+        const T = simValues.temp || 12;
+        const HR = simValues.hr || 88;
+        const rate = Math.max(1, Math.round((100 - HR) * 0.6 + T * 0.4));
+
+        // Central Fruit Circle
+        const cx = W / 2, cy = H / 2;
+        const grad = ctx.createRadialGradient(cx - 15, cy - 15, 10, cx, cy, 65);
+        grad.addColorStop(0, '#00ff88');
+        grad.addColorStop(1, '#065f46');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(cx, cy, 62 - Math.min(18, (100 - HR) * 0.35), 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(`HR: ${HR}% | Temp: ${T}°C`, cx - 60, cy + 5);
+
+        // Vapor molecules escaping
+        ctx.fillStyle = '#00e5ff';
+        for (let p = 0; p < rate; p++) {
+          const ang = (p / rate) * Math.PI * 2 + simAnimPhase * 0.3;
+          const dist = 68 + ((simAnimPhase * 28 + p * 19) % 95);
+          const vx = cx + Math.cos(ang) * dist;
+          const vy = cy + Math.sin(ang) * dist;
+          ctx.beginPath(); ctx.arc(vx, vy, 3.5, 0, Math.PI * 2); ctx.fill();
+        }
+      } else {
+        // Generic dynamic curve + animated bar telemetry for banks 3-8
+        const keys = Object.keys(simValues);
+        const v1 = simValues[keys[0]] || 10;
+        const v2 = simValues[keys[1]] || 5;
+
+        ctx.fillText(`Parámetro A: ${v1} | Parámetro B: ${v2}`, 60, 24);
+        ctx.strokeStyle = '#00e5ff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let i = 0; i <= 100; i++) {
+          const t = i / 100;
+          const x = 50 + t * (W - 90);
+          const norm = Math.abs(Math.sin(t * 3.2 + (v1 * 0.08)) * Math.cos(t * 1.5 - v2 * 0.05));
+          const y = (H - 45) - (0.15 + norm * 0.72) * (H - 80);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Moving scanner bar
+        const scanX = 50 + ((simAnimPhase * 45) % (W - 90));
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.6)';
+        ctx.beginPath(); ctx.moveTo(scanX, 30); ctx.lineTo(scanX, H - 40); ctx.stroke();
+      }
+    }
+
+    // ===========================================================
+    // 7. SECCIÓN 6: LABORATORIO DE DIAGNÓSTICO DE DETERIORO (8)
+    // ===========================================================
+    const diagnosticCases = [
+      {
+        id: 0,
+        title: "Caso 1: Picado y Escaldado en Aguacate",
+        product: "Aguacate Hass (Lote #AG-104)",
+        symptoms: "Piel con depresiones oscuras (pitting), pulpa grisácea cerca a la semilla y falla al ablandar tras 8 días en cuarto frío.",
+        telemetry: "Temp. Cámara: 3.5°C | HR: 92% | °Brix: N/A (Materia seca 24%)",
+        options: [
+          "Daño por frío (Chilling Injury) al almacenar debajo de su umbral crítico (5-7°C).",
+          "Exceso de iluminación LED en el cuarto frío.",
+          "Deficiencia de calcio durante la fertilización en vivero."
+        ],
+        correct: 0,
+        protocol: "Ajustar cámara frigorífica a 5.5°C - 7.0°C para aguacate Hass maduro-verde y verificar calibración del termostato."
+      },
+      {
+        id: 1,
+        title: "Caso 2: Pudrición Blanda en Tomate Lavado",
+        product: "Tomate Chonto (Lote #TM-209)",
+        symptoms: "Colapso acuoso alrededor del pedúnculo con olor fétido 48 horas después del lavado por inmersión en tanque.",
+        telemetry: "Temp. Agua Lavado: 14°C | Cloro libre: 15 ppm | pH agua: 8.4",
+        options: [
+          "Congelación superficial por baja temperatura del agua.",
+          "Infiltración bacteriana (Pectobacterium/Erwinia) por baja dosis de cloro, pH alcalino y agua fría que succiona patógenos.",
+          "Exceso de encerado con cera de carnauba."
+        ],
+        correct: 1,
+        protocol: "Mantener cloro libre entre 100-150 ppm, acidificar agua a pH 6.5-7.0 y asegurar que el agua esté 5°C más tibia que la pulpa del tomate."
+      },
+      {
+        id: 2,
+        title: "Caso 3: Marchitez Severa en Hortalizas de Hoja",
+        product: "Lechuga Batavia y Cilantro (Lote #HL-08)",
+        symptoms: "Pérdida de turgencia, bordes flácidos y reducción del 9% del peso neto en 36 horas de almacenamiento.",
+        telemetry: "Temp. Cámara: 8°C | HR: 64% | Velocidad aire: 1.8 m/s",
+        options: [
+          "Toxicidad por exceso de dióxido de carbono.",
+          "Alta tasa de transpiración provocada por Humedad Relativa baja (64%) y elevado Déficit de Presión de Vapor.",
+          "Maduración climatérica inducida por luz ultravioleta."
+        ],
+        correct: 1,
+        protocol: "Enfriar a 0-2°C, elevar Humedad Relativa al 95-98% mediante humidificadores y utilizar bolsas microperforadas."
+      },
+      {
+        id: 3,
+        title: "Caso 4: Amarillamiento Prematuro de Pepino",
+        product: "Pepino Cohombro (Lote #PC-312)",
+        symptoms: "Pérdida rápida del color verde intenso, amarillamiento apical y ablandamiento en bodega de acopio.",
+        telemetry: "Temp. Bodega: 13°C | HR: 90% | Producto vecino: Banano maduro",
+        options: [
+          "Incompatibilidad de almacenamiento mixto: exposición al etileno exógeno emitido por el banano.",
+          "Daño mecánico por vibración en estiba.",
+          "Falta de lavado con detergente alcalino."
+        ],
+        correct: 0,
+        protocol: "Segregar inmediatamente los productos productores de etileno (banano, maracuyá) de hortalizas sensibles (pepino, brócoli, lechuga) e instalar filtros de KMnO₄."
+      },
+      {
+        id: 4,
+        title: "Caso 5: Magulladuras y Hundimientos en Guayaba",
+        product: "Guayaba Pera (Lote #GY-415)",
+        symptoms: "Áreas blandas aplanadas en la cara inferior y lateral de los frutos tras transporte desde finca en bultos y canastillas sobrellenadas.",
+        telemetry: "Peso por canastilla: 29 kg (Capacidad nominal: 20 kg) | Temp: 24°C",
+        options: [
+          "Daño mecánico por compresión e impacto debido al sobrellenado de canastillas.",
+          "Infección viral transmitida en campo.",
+          "Exceso de humedad relativa durante el viaje."
+        ],
+        correct: 0,
+        protocol: "Limitar el llenado al 85% de la altura de la canastilla (máx. 18-20 kg), usar láminas amortiguadoras y cosechar en madurez fisiológica firme."
+      },
+      {
+        id: 5,
+        title: "Caso 6: Olor Fermentado en Piña Encerada",
+        product: "Piña Gold MD2 (Lote #PN-502)",
+        symptoms: "Olor alcohólico/fermentado al cortar el fruto, sin presencia externa de hongos, tras aplicar doble dosis de cera y empacar en bolsa cerrada.",
+        telemetry: "Temp: 18°C | Concentración O₂ en bolsa: 0.4% | CO₂: 16%",
+        options: [
+          "Respiración anaeróbica (fermentación etanólica) por bloqueo de intercambio gaseoso y ruptura de cadena de frío.",
+          "Exceso de cloro en el tanque de desinfección.",
+          "Cosecha demasiado temprana con bajo °Brix."
+        ],
+        correct: 0,
+        protocol: "Aplicar emulsión de cera a concentración recomendada (1:4), usar películas microperforadas y mantener cadena de frío a 7-10°C."
+      },
+      {
+        id: 6,
+        title: "Caso 7: Moho Verde Esporulado en Naranja",
+        product: "Naranja Valencia (Lote #NR-618)",
+        symptoms: "Lesión acuosa circular que se cubre rápidamente de micelio blanco y esporas verde oliva que contaminan frutos vecinos en la caja.",
+        telemetry: "Temp: 22°C | Heridas por corte con tirón en cosecha: 18%",
+        options: [
+          "Ataque de Penicillium digitatum que penetra exclusivamente por heridas mecánicas en el flavedo.",
+          "Daño por congelación en cuarto frío.",
+          "Deficiencia de nitrógeno en poscosecha."
+        ],
+        correct: 0,
+        protocol: "Capacitar en cosecha con tijera a ras del cáliz (sin tirar del fruto), desinfectar línea de empaque y almacenar a 6-8°C."
+      },
+      {
+        id: 7,
+        title: "Caso 8: Apertura Floral y Amarillamiento de Brócoli",
+        product: "Brócoli (Lote #BR-701)",
+        symptoms: "Floretes amarillos, flácidos y con olor azufrado tras permanecer 12 horas sin enfriar después de cosechado.",
+        telemetry: "Temp. Pulpa Recepción: 26°C | Sin preenfriamiento",
+        options: [
+          "Alta tasa respiratoria intrínseca del brócoli no frenada mediante preenfriamiento inmediato a 0-2°C.",
+          "Exceso de iluminación en el vehículo.",
+          "pH ácido del suelo de cultivo."
+        ],
+        correct: 0,
+        protocol: "Aplicar hidroenfriamiento o hielo líquido (liquid icing) dentro de las primeras 2 horas poscosecha y mantener estrictamente a 0-2°C y 95% HR."
+      }
+    ];
+
+    function initDiagnostics() {
+      const tabs = document.getElementById('diag-case-tabs');
+      tabs.innerHTML = diagnosticCases.map((c, idx) => `
+        <button onclick="selectDiagnosticCase(${idx})" id="diag-tab-${idx}" class="px-2.5 py-2 rounded-xl text-xs font-mono font-bold transition truncate ${idx === 0 ? 'bg-agro-amber/20 border border-agro-amber text-agro-amber' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:border-agro-cyan'}">
+          CASO #0${idx + 1}
+        </button>
+      `).join('');
+      selectDiagnosticCase(0);
+    }
+
+    function selectDiagnosticCase(idx) {
+      appState.currentDiagCaseId = idx;
+      diagnosticCases.forEach((_, i) => {
+        const t = document.getElementById('diag-tab-' + i);
+        if (t) {
+          const solved = appState.solvedCases.has(i);
+          t.className = i === idx
+            ? 'px-2.5 py-2 rounded-xl text-xs font-mono font-bold transition truncate bg-agro-amber/20 border border-agro-amber text-agro-amber'
+            : solved
+              ? 'px-2.5 py-2 rounded-xl text-xs font-mono font-bold transition truncate bg-agro-emerald/15 border border-agro-emerald/50 text-agro-emerald'
+              : 'px-2.5 py-2 rounded-xl text-xs font-mono font-bold transition truncate bg-slate-900 border border-slate-800 text-slate-300 hover:border-agro-cyan';
+        }
+      });
+
+      const c = diagnosticCases[idx];
+      document.getElementById('diag-workspace').innerHTML = `
+        <div class="lg:col-span-5 p-5 rounded-xl bg-slate-900/95 border border-agro-amber/40 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-agro-amber font-bold">ORDEN DE INSPECCIÓN #0${idx + 1}</span>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-agro-cyan">${c.product}</span>
+          </div>
+          <h3 class="font-orbitron text-base font-bold text-white">${c.title}</h3>
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300">
+            <strong class="text-rose-400 block mb-1"><i class="fa-solid fa-eye mr-1"></i> SÍNTOMAS OBSERVADOS:</strong>
+            ${c.symptoms}
+          </div>
+          <div class="p-3 rounded-lg bg-agro-petrol border border-agro-cyan/30 font-mono text-xs text-agro-cyan">
+            <strong class="block mb-1"><i class="fa-solid fa-clipboard-list mr-1"></i> REGISTRO DE BITÁCORA:</strong>
+            ${c.telemetry}
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 p-5 rounded-xl bg-slate-900/95 border border-slate-800 space-y-3">
+          <div class="font-orbitron text-xs font-bold text-agro-emerald">SELECCIONA EL DIAGNÓSTICO DE CAUSA RAÍZ:</div>
+          <div class="space-y-2.5">
+            ${c.options.map((opt, oIdx) => `
+              <button onclick="verifyDiagnostic(${idx}, ${oIdx})" class="w-full text-left p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-agro-cyan text-xs text-slate-200 transition flex items-start gap-2.5">
+                <span class="font-mono font-bold text-agro-cyan">[${String.fromCharCode(65 + oIdx)}]</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="diag-feedback-box" class="hidden p-4 rounded-xl text-xs space-y-1.5"></div>
+        </div>
+      `;
+    }
+
+    function verifyDiagnostic(caseIdx, optIdx) {
+      const c = diagnosticCases[caseIdx];
+      const fb = document.getElementById('diag-feedback-box');
+      fb.classList.remove('hidden');
+
+      if (optIdx === c.correct) {
+        appState.solvedCases.add(caseIdx);
+        document.getElementById('diag-solved-count').textContent = appState.solvedCases.size;
+        addScore(15, 'diag-' + caseIdx);
+        fb.className = 'p-4 rounded-xl text-xs space-y-1.5 bg-emerald-950/70 border border-agro-emerald text-slate-200';
+        fb.innerHTML = `
+          <div class="font-orbitron font-bold text-agro-emerald"><i class="fa-solid fa-circle-check mr-1"></i> ¡DIAGNÓSTICO CORRECTO! (+15 PTS)</div>
+          <div><strong>Protocolo Correctivo y Preventivo SENA:</strong> ${c.protocol}</div>
+        `;
+      } else {
+        fb.className = 'p-4 rounded-xl text-xs space-y-1.5 bg-rose-950/70 border border-rose-500 text-slate-200';
+        fb.innerHTML = `
+          <div class="font-orbitron font-bold text-rose-400"><i class="fa-solid fa-circle-xmark mr-1"></i> DIAGNÓSTICO INCORRECTO</div>
+          <div>Revisa cuidadosamente los datos de temperatura, HR, pH o compatibilidad en la bitácora e inténtalo de nuevo.</div>
+        `;
+      }
+    }
+
+    // ===========================================================
+    // 8. SECCIÓN 7: CALCULADORAS TÉCNICAS
+    // ===========================================================
+    function calcMerma() {
+      const pi = parseFloat(document.getElementById('calc1-pi').value) || 0;
+      const pf = parseFloat(document.getElementById('calc1-pf').value) || 0;
+      const precio = parseFloat(document.getElementById('calc1-precio').value) || 0;
+
+      if (pi <= 0) return;
+      const kgPerdidos = Math.max(0, pi - pf);
+      const pct = ((kgPerdidos / pi) * 100).toFixed(2);
+      const perdidaCOP = Math.round(kgPerdidos * precio).toLocaleString('es-CO');
+
+      document.getElementById('calc1-result').innerHTML = `
+        <div class="text-slate-300">Masa Perdida: <strong class="text-white">${kgPerdidos.toFixed(1)} kg</strong></div>
+        <div class="text-agro-cyan">Porcentaje de Merma (%PP): <strong class="text-base ${pct > 5 ? 'text-rose-400' : 'text-agro-emerald'}">${pct}%</strong></div>
+        <div class="text-agro-amber">Impacto Económico Directo: <strong>$${perdidaCOP} COP</strong></div>
+      `;
+    }
+
+    function calcCloro() {
+      const vol = parseFloat(document.getElementById('calc2-vol').value) || 0;
+      const ppm = parseFloat(document.getElementById('calc2-ppm').value) || 0;
+      const conc = parseFloat(document.getElementById('calc2-conc').value) || 5.25;
+
+      const ml = ((ppm * vol) / (conc * 10)).toFixed(1);
+      const litros = (ml / 1000).toFixed(3);
+
+      document.getElementById('calc2-result').innerHTML = `
+        <div class="text-agro-emerald">Volumen Hipoclorito Comercial a Dosificar: <strong class="text-base text-white">${ml} mL</strong> (${litros} L)</div>
+        <div class="text-slate-400">Nota Técnica: Ajustar pH del agua a 6.5 - 7.0 antes de sumergir el producto agrícola.</div>
+      `;
+    }
+
+    function calcMadurez() {
+      const brix = parseFloat(document.getElementById('calc3-brix').value) || 0;
+      const acidez = parseFloat(document.getElementById('calc3-acidez').value) || 0.1;
+      const prod = document.getElementById('calc3-prod').value;
+
+      const im = (brix / acidez).toFixed(2);
+      const ranges = {
+        citrico: [10, 16, "Naranja Valencia"],
+        pina: [18, 24, "Piña Gold MD2"],
+        mango: [14, 20, "Mango Tommy"],
+        tomate: [8, 12, "Tomate Chonto"]
+      };
+      const [minR, maxR, nombre] = ranges[prod];
+      let estado = "ÓPTIMO PARA COMERCIALIZACIÓN";
+      let color = "text-agro-emerald";
+      if (im < minR) { estado = "INMADURO / ÁCIDO (Esperar cosecha)"; color = "text-agro-cyan"; }
+      else if (im > maxR) { estado = "SOBREMADURO (Consumo inmediato / agroindustria)"; color = "text-agro-amber"; }
+
+      document.getElementById('calc3-result').innerHTML = `
+        <div class="text-white">Índice de Madurez (IM): <strong class="text-base text-agro-amber">${im}</strong></div>
+        <div class="${color}">Clasificación (${nombre}): <strong>${estado}</strong></div>
+      `;
+    }
+
+    function calcTermica() {
+      const masa = parseFloat(document.getElementById('calc4-masa').value) || 0;
+      const ti = parseFloat(document.getElementById('calc4-ti').value) || 0;
+      const tf = parseFloat(document.getElementById('calc4-tf').value) || 0;
+      const cp = 3.85; // kJ/kg·°C promedio frutas y hortalizas frescas
+
+      const dt = Math.max(0, ti - tf);
+      const qKJ = masa * cp * dt;
+      const qKWh = (qKJ / 3600).toFixed(2);
+      const tonRef = (qKJ / (3.517 * 3600)).toFixed(2);
+
+      document.getElementById('calc4-result').innerHTML = `
+        <div class="text-purple-300">Calor Sensible a Remover (Q): <strong class="text-white">${Math.round(qKJ).toLocaleString('es-CO')} kJ</strong> (${qKWh} kWh)</div>
+        <div class="text-agro-cyan">Capacidad Frigorífica Requerida (en 1 hora): <strong>${tonRef} Toneladas de Refrigeración (TR)</strong></div>
+      `;
+    }
+
+    // ===========================================================
+    // 9. SECCIÓN 8: EVALUACIÓN POR 3 NIVELES + REPORTE SENA
+    // ===========================================================
+    const evalLevel1Questions = [
+      {
+        q: "1. ¿Cuál de los siguientes grupos corresponde exclusivamente a frutos CLIMATÉRICOS?",
+        opts: ["Naranja, piña, fresa y pepino", "Banano, mango, aguacate y tomate", "Limón Tahití, mora, lechuga y zanahoria"],
+        ans: 1
+      },
+      {
+        q: "2. Según la Regla de Van't Hoff (Q₁₀), ¿qué ocurre cuando la temperatura de almacenamiento aumenta 10°C?",
+        opts: ["La tasa respiratoria se reduce a la mitad", "La tasa respiratoria se duplica o triplica, acelerando el deterioro", "Se detiene completamente la síntesis de etileno"],
+        ans: 1
+      },
+      {
+        q: "3. ¿Cuál es el rango óptimo de pH del agua para maximizar el poder desinfectante del hipoclorito de sodio?",
+        opts: ["pH 6.5 a 7.0", "pH 8.5 a 9.5", "pH 3.0 a 4.0"],
+        ans: 0
+      }
+    ];
+
+    function switchEvalLevel(lvl) {
+      [1, 2, 3].forEach(i => {
+        const b = document.getElementById('eval-tab-' + i);
+        b.className = i === lvl
+          ? 'px-4 py-2.5 rounded-xl bg-agro-emerald/20 border border-agro-emerald text-agro-emerald font-orbitron text-xs font-bold'
+          : 'px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 font-orbitron text-xs font-bold';
+      });
+
+      const area = document.getElementById('eval-content-area');
+      if (lvl === 1) {
+        area.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-7 space-y-4">
+              ${evalLevel1Questions.map((item, idx) => `
+                <div class="p-4 rounded-xl bg-slate-900/95 border border-slate-800 space-y-2.5">
+                  <div class="text-xs font-bold text-white">${item.q}</div>
+                  <div class="space-y-1.5">
+                    ${item.opts.map((o, oi) => `
+                      <button onclick="answerEval1(${idx}, ${oi})" id="e1-${idx}-${oi}" class="w-full text-left px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 hover:border-agro-cyan text-xs text-slate-300 transition">
+                        ${o}
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Interactive SVG Diagram Identification -->
+            <div class="lg:col-span-5 p-4 rounded-xl bg-agro-petrol border border-agro-cyan/40 space-y-3">
+              <div class="font-orbitron text-xs font-bold text-agro-cyan">IDENTIFICACIÓN VISUAL EN DIAGRAMA DE LÍNEA</div>
+              <p class="text-xs text-slate-300">Haz clic sobre el <strong>Túnel de Preenfriamiento por Aire Forzado</strong> en el esquema:</p>
+              <svg viewBox="0 0 360 180" class="w-full rounded-xl bg-slate-950 border border-slate-800 p-2">
+                <rect onclick="checkSvgPart('recepcion')" x="15" y="55" width="70" height="70" rx="8" fill="#1e293b" stroke="#ff9e00" stroke-width="2" class="cursor-pointer hover:opacity-80"/>
+                <text x="50" y="94" fill="#ff9e00" font-size="10" text-anchor="middle" font-family="monospace">ZONA A</text>
+
+                <rect onclick="checkSvgPart('lavado')" x="105" y="55" width="70" height="70" rx="8" fill="#1e293b" stroke="#00ff88" stroke-width="2" class="cursor-pointer hover:opacity-80"/>
+                <text x="140" y="94" fill="#00ff88" font-size="10" text-anchor="middle" font-family="monospace">ZONA B</text>
+
+                <rect onclick="checkSvgPart('tunel')" x="195" y="55" width="70" height="70" rx="8" fill="#083344" stroke="#00e5ff" stroke-width="2" class="cursor-pointer hover:opacity-80"/>
+                <text x="230" y="94" fill="#00e5ff" font-size="10" text-anchor="middle" font-family="monospace">ZONA C</text>
+
+                <rect onclick="checkSvgPart('despacho')" x="285" y="55" width="60" height="70" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="2" class="cursor-pointer hover:opacity-80"/>
+                <text x="315" y="94" fill="#a855f7" font-size="10" text-anchor="middle" font-family="monospace">ZONA D</text>
+
+                <line x1="85" y1="90" x2="105" y2="90" stroke="#94a3b8" stroke-width="2"/>
+                <line x1="175" y1="90" x2="195" y2="90" stroke="#94a3b8" stroke-width="2"/>
+                <line x1="265" y1="90" x2="285" y2="90" stroke="#94a3b8" stroke-width="2"/>
+              </svg>
+              <div id="svg-eval-fb" class="text-xs font-mono text-slate-300">Selecciona una zona (A, B, C o D)...</div>
+            </div>
+          </div>
+        `;
+      } else if (lvl === 2) {
+        area.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="p-5 rounded-xl bg-slate-900/95 border border-slate-800 space-y-3">
+              <div class="font-orbitron text-xs font-bold text-agro-cyan">EMPAREJAMIENTO TÉCNICO: PRODUCTO VS. TEMPERATURA ÓPTIMA</div>
+              <div class="space-y-3 text-xs">
+                <div class="flex items-center justify-between gap-2">
+                  <span>1. Mora de Castilla / Lechuga</span>
+                  <select id="match-1" class="bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="0-2">0°C a 2°C (HR 95%)</option>
+                    <option value="13-14">13°C a 14°C (HR 90%)</option>
+                  </select>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>2. Banano / Plátano Hartón</span>
+                  <select id="match-2" class="bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-white">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="0-2">0°C a 2°C (HR 95%)</option>
+                    <option value="13-14">13°C a 14°C (HR 90%)</option>
+                  </select>
+                </div>
+                <button onclick="checkEval2()" class="px-4 py-2 rounded-lg bg-agro-emerald text-slate-950 font-orbitron font-bold text-xs">VERIFICAR EMPAREJAMIENTO</button>
+                <div id="eval2-fb" class="font-mono text-xs"></div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-xl bg-slate-900/95 border border-slate-800 space-y-3">
+              <div class="font-orbitron text-xs font-bold text-agro-amber">CRITERIOS VERDADERO / FALSO</div>
+              <div class="space-y-3 text-xs">
+                <p><strong>Afirmación:</strong> "Los frutos no climatéricos como la piña y la naranja aumentan su contenido de almidón a azúcares después de cosechados si se les aplica etileno."</p>
+                <div class="flex gap-3">
+                  <button onclick="checkTF(true)" class="px-4 py-2 rounded-lg bg-slate-950 border border-slate-700 hover:border-agro-cyan">VERDADERO</button>
+                  <button onclick="checkTF(false)" class="px-4 py-2 rounded-lg bg-slate-950 border border-slate-700 hover:border-agro-emerald">FALSO</button>
+                </div>
+                <div id="tf-fb" class="font-mono text-xs"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          <div class="p-5 rounded-xl bg-slate-900/95 border border-agro-emerald/40 space-y-4 max-w-3xl">
+            <div class="font-orbitron text-sm font-bold text-agro-emerald">CASO INTEGRADOR DE CENTRO DE ACOPIO (EL BAGRE)</div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Un lote de <strong>800 kg de limón Tahití</strong> ingresa al centro de acopio. Se requiere preparar un tanque de lavado de <strong>400 litros</strong> a una concentración de <strong>100 ppm</strong> usando hipoclorito de sodio comercial al <strong>5%</strong>. Adicionalmente, al finalizar el acondicionamiento el lote pesa <strong>768 kg</strong>.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1">1. ¿Cuántos mL de hipoclorito al 5% debe agregar?</label>
+                <input type="number" id="e3-ml" placeholder="Ej. 800" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono text-white">
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1">2. ¿Cuál fue el % de merma del lote?</label>
+                <input type="number" id="e3-merma" step="0.1" placeholder="Ej. 4.0" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono text-white">
+              </div>
+            </div>
+            <button onclick="checkEval3()" class="px-5 py-2.5 rounded-xl bg-agro-emerald text-slate-950 font-orbitron font-bold text-xs">EVALUAR CASO PRÁCTICO</button>
+            <div id="eval3-fb" class="text-xs font-mono"></div>
+          </div>
+        `;
+      }
+    }
+
+    function answerEval1(qIdx, oIdx) {
+      const q = evalLevel1Questions[qIdx];
+      q.opts.forEach((_, i) => {
+        const b = document.getElementById(`e1-${qIdx}-${i}`);
+        b.classList.remove('border-agro-emerald', 'bg-emerald-950/60', 'border-rose-500', 'bg-rose-950/60');
+      });
+      const chosen = document.getElementById(`e1-${qIdx}-${oIdx}`);
+      if (oIdx === q.ans) {
+        chosen.classList.add('border-agro-emerald', 'bg-emerald-950/60');
+        addScore(10, 'e1-' + qIdx);
+      } else {
+        chosen.classList.add('border-rose-500', 'bg-rose-950/60');
+      }
+    }
+
+    function checkSvgPart(zone) {
+      const fb = document.getElementById('svg-eval-fb');
+      if (zone === 'tunel') {
+        addScore(15, 'e1-svg');
+        fb.innerHTML = `<span class="text-agro-emerald font-bold"><i class="fa-solid fa-check mr-1"></i> ¡Correcto! Zona C corresponde al Túnel de Preenfriamiento previo al despacho frío (+15 pts).</span>`;
+      } else {
+        fb.innerHTML = `<span class="text-rose-400"><i class="fa-solid fa-xmark mr-1"></i> Incorrecto. Zona A=Recepción, Zona B=Lavado, Zona D=Despacho. Intenta de nuevo.</span>`;
+      }
+    }
+
+    function checkEval2() {
+      const m1 = document.getElementById('match-1').value;
+      const m2 = document.getElementById('match-2').value;
+      const fb = document.getElementById('eval2-fb');
+      if (m1 === '0-2' && m2 === '13-14') {
+        addScore(15, 'e2-match');
+        fb.innerHTML = `<span class="text-agro-emerald font-bold">¡Excelente! Mora/Lechuga requieren 0-2°C y Banano/Plátano 13-14°C para evitar daño por frío (+15 pts).</span>`;
+      } else {
+        fb.innerHTML = `<span class="text-rose-400">Revisa los rangos térmicos en la Tabla Maestra de la Sección 9.</span>`;
+      }
+    }
+
+    function checkTF(val) {
+      const fb = document.getElementById('tf-fb');
+      if (val === false) {
+        addScore(10, 'e2-tf');
+        fb.innerHTML = `<span class="text-agro-emerald font-bold">¡Correcto! Es FALSO: los frutos no climatéricos no acumulan reservas de almidón para madurar poscosecha (+10 pts).</span>`;
+      } else {
+        fb.innerHTML = `<span class="text-rose-400">Incorrecto: el etileno en cítricos solo degrada clorofila (desverdizado), no aumenta °Brix.</span>`;
+      }
+    }
+
+    function checkEval3() {
+      const ml = parseFloat(document.getElementById('e3-ml').value);
+      const merma = parseFloat(document.getElementById('e3-merma').value);
+      const fb = document.getElementById('eval3-fb');
+
+      // V1 = (100 * 400) / (5 * 10) = 800 mL; Merma = ((800 - 768) / 800) * 100 = 4.0%
+      if (Math.abs(ml - 800) <= 5 && Math.abs(merma - 4) <= 0.2) {
+        addScore(25, 'e3-case');
+        fb.innerHTML = `<span class="text-agro-emerald font-bold"><i class="fa-solid fa-award mr-1"></i> ¡CÁLCULOS EXACTOS! Dosis = 800 mL de NaClO al 5% y Merma = 4.0% (+25 pts).</span>`;
+      } else {
+        fb.innerHTML = `<span class="text-rose-400">Revisa las fórmulas: V₁ = (100 × 400) / (5 × 10) y %PP = [(800 - 768) / 800] × 100.</span>`;
+      }
+    }
+
+    function openSenaReport() {
+      const name = appState.apprenticeName || "Aprendiz SENA (Sin registrar nombre)";
+      const pct = Math.round((appState.visitedSections.size / 9) * 100);
+      const now = new Date().toLocaleString('es-CO');
+
+      document.getElementById('sena-report-body').innerHTML = `
+        <div class="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+          <div><span class="text-slate-400">Aprendiz:</span> <strong class="text-white">${name}</strong></div>
+          <div><span class="text-slate-400">Ficha Programa:</span> <strong class="text-agro-cyan">3226084 • Gestión Agroempresarial</strong></div>
+          <div><span class="text-slate-400">Fecha y Hora:</span> <strong class="text-white">${now}</strong></div>
+          <div><span class="text-slate-400">Instructor Responsable:</span> <strong class="text-agro-emerald">Carlos Julio Rhenals Ospino</strong></div>
+        </div>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="p-3 rounded-xl bg-slate-950 border border-agro-cyan/40">
+            <div class="text-slate-400 text-[10px] font-mono">COBERTURA OVA</div>
+            <div class="text-xl font-orbitron font-bold text-agro-cyan">${pct}%</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-agro-emerald/40">
+            <div class="text-slate-400 text-[10px] font-mono">PUNTAJE TÉCNICO</div>
+            <div class="text-xl font-orbitron font-bold text-agro-emerald">${appState.score} PTS</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-agro-amber/40">
+            <div class="text-slate-400 text-[10px] font-mono">CASOS DIAGNÓSTICO</div>
+            <div class="text-xl font-orbitron font-bold text-agro-amber">${appState.solvedCases.size} / 8</div>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400">
+          Certificación generada automáticamente por el simulador <strong>AGRO-LAB 4.0</strong> como soporte de evidencia de conocimiento y desempeño para el Resultado de Aprendizaje de Manejo de Poscosecha de Productos Agrícolas (Código 270403050).
+        </p>
+      `;
+      document.getElementById('sena-report-modal').classList.remove('hidden');
+    }
+
+    function closeSenaReport() {
+      document.getElementById('sena-report-modal').classList.add('hidden');
+    }
+
+    // ===========================================================
+    // 10. SECCIÓN 9: TABLA MAESTRA DE ALMACENAMIENTO
+    // ===========================================================
+    const storageProducts = [
+      { name: "Aguacate Hass", type: "Climatérico", temp: "5 - 7°C", hr: "85 - 90%", eth: "Alta", life: "2 - 4 semanas", risk: "Daño por frío (<4°C) y antracnosis" },
+      { name: "Banano / Plátano", type: "Climatérico", temp: "13 - 14°C", hr: "90 - 95%", eth: "Muy Alta", life: "2 - 4 semanas", risk: "Escaldado subepidérmico (<12°C)" },
+      { name: "Mango Tommy Atkins", type: "Climatérico", temp: "12 - 13°C", hr: "85 - 90%", eth: "Alta", life: "2 - 3 semanas", risk: "Daño por frío (<10°C) y Colletotrichum" },
+      { name: "Papaya Maradol", type: "Climatérico", temp: "10 - 12°C", hr: "90 - 95%", eth: "Alta", life: "1 - 3 semanas", risk: "Picado de piel (<9°C) y pudrición peduncular" },
+      { name: "Tomate Chonto", type: "Climatérico", temp: "10 - 12°C", hr: "90 - 95%", eth: "Alta", life: "1 - 3 semanas", risk: "Falla de coloración roja (<10°C)" },
+      { name: "Piña Gold MD2", type: "No Climatérico", temp: "7 - 10°C", hr: "85 - 90%", eth: "Baja", life: "2 - 4 semanas", risk: "Pardeamiento interno endógeno (<7°C)" },
+      { name: "Naranja Valencia", type: "No Climatérico", temp: "6 - 8°C", hr: "85 - 90%", eth: "Media (Desverdizado)", life: "4 - 8 semanas", risk: "Moho verde (Penicillium digitatum)" },
+      { name: "Limón Tahití", type: "No Climatérico", temp: "9 - 10°C", hr: "85 - 90%", eth: "Alta (Amarillamiento)", life: "4 - 6 semanas", risk: "Pérdida color verde por etileno o calor" },
+      { name: "Mora de Castilla", type: "No Climatérico", temp: "0 - 1°C", hr: "90 - 95%", eth: "Baja", life: "3 - 5 días", risk: "Moho gris (Botrytis) y deshidratación" },
+      { name: "Lechuga Batavia", type: "No Climatérico", temp: "0 - 1°C", hr: "95 - 98%", eth: "Muy Alta", life: "2 - 3 semanas", risk: "Mancha rojiza (Russet spotting) por etileno" },
+      { name: "Brócoli", type: "No Climatérico", temp: "0 - 1°C", hr: "95 - 98%", eth: "Muy Alta", life: "10 - 14 días", risk: "Amarillamiento rápido sin hielo/frío" },
+      { name: "Yuca Parafinada", type: "No Climatérico", temp: "2 - 4°C", hr: "85 - 90%", eth: "Baja", life: "2 - 4 semanas", risk: "Estriado vascular fisiológico sin parafina" }
+    ];
+
+    function filterStorageTable() {
+      const q = (document.getElementById('table-search').value || '').toLowerCase();
+      const t = document.getElementById('table-filter-type').value;
+
+      const filtered = storageProducts.filter(p => {
+        const matchQ = p.name.toLowerCase().includes(q) || p.risk.toLowerCase().includes(q);
+        const matchT = t === 'ALL' || p.type === t;
+        return matchQ && matchT;
+      });
+
+      document.getElementById('storage-table-body').innerHTML = filtered.map(p => `
+        <tr class="hover:bg-slate-900/70 transition">
+          <td class="p-3 font-bold text-white">${p.name}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-mono ${p.type === 'Climatérico' ? 'bg-agro-amber/20 text-agro-amber' : 'bg-agro-cyan/20 text-agro-cyan'}">${p.type}</span></td>
+          <td class="p-3 font-mono text-agro-emerald font-bold">${p.temp}</td>
+          <td class="p-3 font-mono text-slate-300">${p.hr}</td>
+          <td class="p-3 text-slate-300">${p.eth}</td>
+          <td class="p-3 font-mono text-slate-200">${p.life}</td>
+          <td class="p-3 text-rose-300">${p.risk}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ===========================================================
+    // 11. ASISTENTE VIRTUAL: AGROBOT POSCOSECHA SENA
+    // ===========================================================
+    function toggleAgroBot() {
+      document.getElementById('agrobot-window').classList.toggle('hidden');
+    }
+
+    function askAgroBotQuick(text) {
+      appendBotMessage(text, 'user');
+      respondAgroBot(text);
+    }
+
+    function handleAgroBotSubmit(e) {
+      e.preventDefault();
+      const inp = document.getElementById('agrobot-input');
+      const text = inp.value.trim();
+      if (!text) return;
+      appendBotMessage(text, 'user');
+      inp.value = '';
+      respondAgroBot(text);
+    }
+
+    function appendBotMessage(text, sender) {
+      const box = document.getElementById('agrobot-messages');
+      const div = document.createElement('div');
+      div.className = sender === 'user'
+        ? 'p-2.5 rounded-xl bg-agro-cyan/20 border border-agro-cyan/40 text-white ml-6'
+        : 'p-2.5 rounded-xl bg-slate-900/95 border border-agro-emerald/30 text-slate-200 mr-4';
+      div.innerHTML = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function respondAgroBot(query) {
+      const q = query.toLowerCase();
+      let reply = "Para la competencia <strong>270403050</strong>, recuerda que el control de temperatura, humedad relativa (85-95%), higienización con cloro (100-150 ppm a pH 6.8) y manejo en canastillas ventiladas son la base para reducir mermas.";
+
+      if (q.includes('climateric') || q.includes('climatéric')) {
+        reply = "<strong>Climatéricos</strong> (banano, mango, aguacate, tomate) presentan pico respiratorio y autocatálisis de etileno, madurando tras la cosecha. <strong>No climatéricos</strong> (cítricos, piña, mora) deben cosecharse listos para consumo porque no acumulan reservas de almidón.";
+      } else if (q.includes('cloro') || q.includes('ppm') || q.includes('hipoclorito')) {
+        reply = "Fórmula oficial: <strong>mL Hipoclorito = (ppm deseada × Litros agua) / (% Cloro comercial × 10)</strong>. Mantén el pH entre 6.5 y 7.0 para garantizar ácido hipocloroso activo.";
+      } else if (q.includes('frio') || q.includes('frío') || q.includes('chilling')) {
+        reply = "El <strong>Daño por Frío (Chilling Injury)</strong> ocurre en frutos tropicales (banano <12°C, mango <10°C, aguacate <5°C). Causa picado de piel, oscurecimiento interno y falla de maduración.";
+      } else if (q.includes('2674') || q.includes('norma') || q.includes('ntc')) {
+        reply = "La <strong>Resolución 2674 de 2013</strong> regula las BPM en plantas de acondicionamiento y empaque, mientras que las <strong>Normas Técnicas Colombianas (NTC)</strong> definen calidades (Extra, I, II) y calibres por producto.";
+      } else if (q.includes('brix') || q.includes('madurez')) {
+        reply = "El <strong>Índice de Madurez (IM) = °Brix / % Acidez Titulable</strong>. Permite determinar con precisión el punto óptimo de cosecha y aceptación agroindustrial.";
+      }
+
+      setTimeout(() => appendBotMessage(reply, 'bot'), 250);
+    }
+
+    // ===========================================================
+    // INITIALIZATION ON WINDOW LOAD
+    // ===========================================================
+    window.onload = function () {
+      selectPipelineStage(0);
+      renderCurricularMap();
+      renderLibraryTabs();
+      initHero3D();
+      initLab3D();
+      initSimulators();
+      initDiagnostics();
+      calcMerma();
+      calcCloro();
+      calcMadurez();
+      calcTermica();
+      switchEvalLevel(1);
+      filterStorageTable();
+      animate3DLoop();
+
+      window.addEventListener('resize', () => {
+        resizeHero3D();
+        resizeLab3D();
+        resizeSim2D();
+      });
+    };
+  </script>
+</body>
+</html>
